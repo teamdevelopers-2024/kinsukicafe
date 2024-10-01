@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Logo from "../../assets/logoNoBackground.png";
+import Logo from "../../assets/logo.jpg";
 import User from "../../assets/user.svg";
 import Lock from "../../assets/lock.svg";
 import api from "../../services/api";
@@ -38,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row h-screen items-center justify-center bg-gray-900 overflow-hidden">
+    <div className="flex flex-col md:flex-row h-screen items-center justify-center bg-[#23346c] overflow-hidden">
       {/* Left section with the logo */}
       <div className="flex items-center justify-center w-full md:w-1/2 p-4">
         <img src={Logo} alt="Sea Land Car Care" className="w-3/4 max-w-xs" />
@@ -49,8 +49,8 @@ const Login = () => {
 
       {/* Right section with the login form */}
       <div className="w-full md:w-1/2 p-8 flex flex-col items-center justify-center">
-        <h2 className="text-white text-3xl font-bold mb-4">WELCOME</h2>
-        <p className="text-gray-400 mb-8">PLEASE LOGIN TO ADMIN DASHBOARD</p>
+        <h2 className="text-[#ffeda5] text-3xl font-bold mb-4">WELCOME</h2>
+        <p className="text-[#ffeda5] mb-8">PLEASE LOGIN TO ADMIN DASHBOARD</p>
 
         {/* Display error message */}
         {error && (
@@ -61,14 +61,14 @@ const Login = () => {
 
         {/* Username Input */}
         <div className="mb-6 w-full max-w-md">
-          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="username">
+          <label className="block text-[#ffeda5] text-sm font-bold mb-2" htmlFor="username">
             <div className="flex items-center">
               <img src={User} alt="user svg" className="mr-2" />
               Username
             </div>
           </label>
           <input
-            className="w-full p-3 text-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#4B49AC]"
+            className="w-full p-3 text-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#ffeda5]"
             id="username"
             type="text"
             placeholder="Username"
@@ -79,14 +79,14 @@ const Login = () => {
 
         {/* Password Input */}
         <div className="mb-6 w-full max-w-md">
-          <label className="block text-gray-300 text-sm font-bold mb-2" htmlFor="password">
+          <label className="block text-[#ffeda5] text-sm font-bold mb-2" htmlFor="password">
             <div className="flex items-center">
               <img src={Lock} alt="lock svg" className="mr-2" />
               Password
             </div>
           </label>
           <input
-            className="w-full p-3 text-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#4B49AC]"
+            className="w-full p-3 text-gray-900 border border-gray-600 rounded focus:outline-none focus:ring-2 focus:ring-[#ffeda5]"
             id="password"
             type="password"
             placeholder="Password"
@@ -98,7 +98,7 @@ const Login = () => {
         {/* Login Button */}
         <button
           onClick={handleLogin}
-          className="bg-red-500 w-full max-w-md text-white font-bold py-3 rounded-full hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+          className="bg-[#ffeda5] w-full max-w-md text-#23346c font-bold py-3 rounded-full hover:bg-[#ffffff] focus:outline-none focus:ring-2 focus:ring-[#ffffff"
         >
           LOGIN
         </button>
