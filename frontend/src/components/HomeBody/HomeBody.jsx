@@ -112,10 +112,10 @@ function HomeBody() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-16">
+    <div className="min-h-screen bg-[#ffeda5] text-white p-16">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-stretch">
         {/* Card 1 - Today's Revenue */}
-        <div className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-[#23346c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
           {transitions(
             (styles, item) =>
               item && (
@@ -126,8 +126,8 @@ function HomeBody() {
               )
           )}
           <div className="flex flex-row justify-between">
-            <h2 className="text-lg text-[#00BDD6] mb-2">Today's Revenue</h2>
-            <div className="px-0.5 py-0.5 border border-[#00BDD6] rounded-md">
+            <h2 className="text-lg text-[#ffeda5] mb-2">Today's Revenue</h2>
+            <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
               <img src={revenueIcon} alt="" />
             </div>
           </div>
@@ -163,7 +163,7 @@ function HomeBody() {
         </div>
 
         {/* Card 2 - Today's Expenses */}
-        <div className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+        <div className="bg-[#23346c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
           {transitions(
             (styles, item) =>
               item && (
@@ -174,8 +174,8 @@ function HomeBody() {
               )
           )}
           <div className="flex flex-row justify-between">
-            <h2 className="text-lg text-[#00BDD6] mb-2">Today's Expenses</h2>
-            <div className="px-0.5 py-0.5 border border-[#00BDD6] rounded-md">
+            <h2 className="text-lg text-[#ffeda5] mb-2">Today's Expenses</h2>
+            <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
               <img src={expenseIcon} alt="" />
             </div>
           </div>
@@ -212,7 +212,7 @@ function HomeBody() {
 
         <div className="space-y-4">
           {/* Card 3 - Today's Customers */}
-          <div className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+          <div className="bg-[#23346c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
             {transitions(
               (styles, item) =>
                 item && (
@@ -223,8 +223,8 @@ function HomeBody() {
                 )
             )}
             <div className="flex flex-row justify-between">
-              <h2 className="text-lg text-[#00BDD6] mb-2">Today's Customers</h2>
-              <div className="px-0.5 py-0.5 border border-[#00BDD6] rounded-md">
+              <h2 className="text-lg text-[#ffeda5] mb-2">Today's Customers</h2>
+              <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
                 <img src={customersIcon} alt="" />
               </div>
             </div>
@@ -248,7 +248,7 @@ function HomeBody() {
           </div>
 
           {/* Card 4 - Yesterday's Revenue */}
-          <div className="bg-gray-800 p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+          <div className="bg-[#23346c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
             {transitions(
               (styles, item) =>
                 item && (
@@ -259,10 +259,10 @@ function HomeBody() {
                 )
             )}
             <div className="flex flex-row justify-between">
-              <h2 className="text-lg text-[#00BDD6] mb-2">
+              <h2 className="text-lg text-[#ffeda5] mb-2">
                 Yesterday's Revenue
               </h2>
-              <div className="px-0.5 py-0.5 border border-[#00BDD6] rounded-md">
+              <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
                 <img src={revenueIcon} alt="" />
               </div>
             </div>
@@ -296,7 +296,7 @@ function HomeBody() {
           <h2 className="text-lg text-teal-400 mb-4">Recent Income</h2>
           <button className="text-cyan-400" onClick={() => navigate('/income')}>View All</button>
         </div>
-        <div className="bg-gray-800 p-6 rounded-xl">
+        <div className="bg-[#23346c] p-6 rounded-xl">
           <table className="w-full text-left">
             <thead>
               <tr>
@@ -343,7 +343,7 @@ function HomeBody() {
           <h2 className="text-lg text-teal-400 mb-4">Recent Expense</h2>
           <button className="text-cyan-400" onClick={() => navigate('/expense')}>View All</button>
         </div>
-        <div className="bg-gray-800 p-6 rounded-xl">
+        <div className="bg-[#23346c] p-6 rounded-xl">
           <table className="w-full text-left">
             <thead>
               <tr>
