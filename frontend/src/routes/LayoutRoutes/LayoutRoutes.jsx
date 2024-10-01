@@ -29,9 +29,10 @@ function LayoutRoutes() {
           <Route path="/" element={<Login />} />
           <Route element={<PrivateRoutes />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/credit" element={<CreditCustomers />} />
-            <Route path="/income" element={<Income />} />
+            <Route path="/items" element={<CreditCustomers />} />
+            <Route path="/order" element={<Income />} />
             <Route path="/expense" element={<Expense />} />
+            {/* <Route path="/category" element={<Expense />} /> */}
           </Route>
           <Route path="*" element={<Login />} />
         </Routes>

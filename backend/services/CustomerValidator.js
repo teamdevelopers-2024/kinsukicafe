@@ -1,4 +1,4 @@
-import creditCustomerDb from '../model/creditCustomers.js';
+// import creditCustomerDb from '../model/creditCustomers.js';
 import validator from 'validator';
 
 // Function to validate customer entry data
