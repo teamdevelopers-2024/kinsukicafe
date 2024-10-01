@@ -45,7 +45,7 @@ const Navbar = ({ setAddIncomeModal, setAddExpenseModal }) => {
               onClick={() => navigate('/expense')}
               className={`${pathSegment === 'expense' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'} cursor-pointer`}
             >
-              Expenses
+              Expense
             </a>
           </li>
           <li>
