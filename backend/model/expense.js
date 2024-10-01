@@ -5,19 +5,7 @@ const expenseSchema = new mongoose.Schema({
         type:Date,
         required:true
     },
-    payeeName:{
-        type:String,
-        required :true
-    },
     expenseType:{
-        type:String,
-        required:true
-    },
-    contactNumber:{
-        type:Number,
-        required:true
-    },
-    paymentMethod:{
         type:String,
         required:true
     },
