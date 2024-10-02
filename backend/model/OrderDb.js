@@ -18,7 +18,8 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
             },
             total: {
-                type: Number,
+                type:Number,
+                default:`REF${Date.now()}`
             },
         },
     ],

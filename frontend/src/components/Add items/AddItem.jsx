@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import swal from 'sweetalert';
 import LoadingSpinner from "../spinner/Spinner";
@@ -9,6 +9,7 @@ const AddItem = ({ setAddItemModal }) => {
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [categories , setCategories] = useState([])
 
   // State for validation errors
   const [errors, setErrors] = useState({
@@ -16,6 +17,24 @@ const AddItem = ({ setAddItemModal }) => {
     category: "",
     price: "",
   });
+
+  useEffect(()=>{
+    const fetchCategories = async ()=>{
+        try {
+            const result = await api.getCatogory()
+            console.log("result : " ,result)
+            if(!result.error){
+                setCategories(result.data)
+            }else{
+                swal("!error","something went wrong!","error")
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    fetchCategories()
+    console.log("categories : ",categories)
+  },[])
 
   // Handle input changes
   const handleFieldChange = (setter, fieldName) => (event) => {
@@ -54,9 +73,9 @@ const AddItem = ({ setAddItemModal }) => {
     if (validateForm()) {
       try {
         setLoading(true);
-        const data = await api.AddItem(formData);
+        const data = await api.addItem(formData);
         if (data.error) {
-          swal("Error!", data.errors[0], "error");
+          setErrors({name:data.message})
           return;
         }
         swal("Success!", "Expense added successfully!", "success");
@@ -78,14 +97,14 @@ const AddItem = ({ setAddItemModal }) => {
       <div className="fixed inset-0 bg-black bg-opacity-50 z-20"></div>
       <div className="fixed inset-0 flex items-center justify-center z-30">
         <div className="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-lg mx-auto">
-          <h2 className="text-xl mb-4">Add Expense</h2>
+          <h2 className="text-xl mb-4">Add Item</h2>
 
           <div className="mb-4">
             <label className="block">
               <span className="text-white">Name</span>
               <input
                 type="text"
-                value={name}
+                value={name.toUpperCase()}
                 onChange={handleFieldChange(setName, "name")}
                 placeholder="Enter Name"
                 className="p-2 bg-gray-700 rounded w-full"
@@ -103,9 +122,9 @@ const AddItem = ({ setAddItemModal }) => {
                 className="p-2 bg-gray-700 rounded w-full"
               >
                 <option value="">Select Category</option>
-                <option value="Food">Food</option>
-                <option value="Transport">Transport</option>
-                <option value="Shopping">Shopping</option>
+                {categories.map((cat,i)=>(
+                <option id={i} value={cat.name}>{cat.name}</option>
+                ))}
               </select>
               {errors.category && <p className="text-red-500 text-sm">{errors.category}</p>}
             </label>
