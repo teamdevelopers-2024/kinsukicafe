@@ -3,7 +3,7 @@ import api from "../../services/api";
 import swal from 'sweetalert';
 import LoadingSpinner from "../spinner/Spinner";
 
-const AddIncome = ({ setAddIncomeModal }) => {
+const AddOrder = ({ setAddOrderModal }) => {
   // State to handle the dynamic fields
   const [workDescriptions, setWorkDescriptions] = useState([
     { description: "", amount: "", reference: "" },
@@ -125,7 +125,7 @@ const AddIncome = ({ setAddIncomeModal }) => {
         return;
       }
       swal("Success!", "Income added successfully!", "success");
-      setAddIncomeModal(false); // Close the modal after saving
+      setAddOrderModal(false); // Close the modal after saving
     } catch (err) {
       console.error(err);
       swal("Error!", "Failed to add income.", "error");
@@ -285,7 +285,7 @@ const AddIncome = ({ setAddIncomeModal }) => {
             </button>
             <div>
               <button
-                onClick={() => setAddIncomeModal(false)}
+                onClick={() => setAddOrderModal(false)}
                 className="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded mr-2"
               >
                 Cancel
@@ -301,4 +301,4 @@ const AddIncome = ({ setAddIncomeModal }) => {
   );
 };
 
-export default AddIncome;
+export default AddOrder;

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import searchIcon from "../../assets/searchIcon.svg";
-import addCustomerIcon from "../../assets/addCustomerIcon.svg";
+// import addCustomerIcon from "../../assets/addCustomerIcon.svg";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 
 const ItemsBody = () => {
   const [showAddItem, setshowAddItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [customers, setCustomers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); // Pagination state
-  const [isLoading, setIsLoading] = useState(false); // Loading state for table data
+  const [currentPage, setCurrentPage] = useState(1); 
+  const [isLoading, setIsLoading] = useState(false); 
 
   const customersPerPage = 10; // Number of customers per page
 
@@ -70,7 +70,7 @@ const ItemsBody = () => {
       <div className="bg-[#23346c] min-h-screen p-10">
         <div className="container p-6 mx-auto">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-teal-400">Customer Data</h1>
+            <h1 className="text-3xl font-bold text-teal-400">Items</h1>
 
             <div className="flex items-center space-x-4">
               <div className="bg-[#00BDD6] bg-opacity-10 px-2 border border-[#00BDD6] rounded-lg">
@@ -78,7 +78,7 @@ const ItemsBody = () => {
                   <img src={searchIcon} alt="" />
                   <input
                     type="text"
-                    placeholder="Search customer..."
+                    placeholder="Search item..."
                     className="w-64 h-10 px-3 rounded bg-transparent text-white outline-none"
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
@@ -89,8 +89,8 @@ const ItemsBody = () => {
                 className="flex flex-row bg-[#00A1B7] text-white font-semibold gap-1 px-4 py-2 rounded-md"
                 onClick={() => setshowAddItem(true)}
               >
-                <img src={addCustomerIcon} alt="" />
-                New Customer
+                {/* <img src={addCustomerIcon} alt="" /> */}
+                Add Item
               </button>
             </div>
           </div>
@@ -123,7 +123,7 @@ const ItemsBody = () => {
                 {filteredCustomers.length === 0 && !isLoading && (
                   <tr>
                     <td colSpan="9" className="text-center pt-6 font-medium">
-                      No Credit Customers...
+                      No Items...
                     </td>
                   </tr>
                 )}

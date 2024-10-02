@@ -189,9 +189,9 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
   };
   return (
     <>
-      <div className="bg-gray-800 p-8 rounded-xl flex justify-between items-center mb-8">
+      <div className="bg-[#00144c] p-8 rounded-xl flex justify-between items-center mb-8">
         <div className="text-left space-y-3 w-1/3">
-          <h2 className="text-5xl font-bold text-cyan-400">Total income</h2>
+          <h2 className="text-5xl font-bold text-[#ffeda5]">Total income</h2>
           <h3 className="text-3xl text-green-300 font-bold">
             {!isLoading ? new Intl.NumberFormat("en-IN", {
               style: "currency",
@@ -199,7 +199,7 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
             }).format(totalIncome) :<SpinnerOnly/>}
           </h3>
           <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
-          <h2 className="text-3xl font-bold text-cyan-400">
+          <h2 className="text-3xl font-bold text-[#ffeda5]">
             {timePeriod} income
           </h2>
           <h3 className="text-3xl text-green-300 font-bold">
@@ -254,7 +254,7 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
                     justifyContent: "center",
                   }}
                 >
-                  <button onClick={handlePrevYear} className="text-cyan-400">
+                  <button onClick={handlePrevYear} className="text-[#ffeda5]">
                     <FaChevronLeft />
                   </button>
                 </div>
@@ -269,7 +269,7 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
                     justifyContent: "center",
                   }}
                 >
-                  <button onClick={handleNextYear} className="text-cyan-400">
+                  <button onClick={handleNextYear} className="text-[#ffeda5]">
                     <FaChevronRight />
                   </button>
                 </div>

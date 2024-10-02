@@ -198,7 +198,7 @@ const OrderBody = ({ addIncomeModal }) => {
         />
 
         {/* Income History Table */}
-        <div className="bg-gray-800 p-10 rounded-lg">
+        <div className="bg-[#00144c] p-10 rounded-lg">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-2xl font-bold text-[#ffeda5]">Order History</h3>
             <input
@@ -213,13 +213,9 @@ const OrderBody = ({ addIncomeModal }) => {
           <table className="w-full text-left">
             <thead>
               <tr className="text-gray-500">
-                <th className="pb-2">Date</th>
-                <th className="pb-2">Customer Name</th>
-                <th className="pb-2">Vehicle Number</th>
-                <th className="pb-2">Payment Type</th>
-                <th className="pb-2">Phone Number</th>
-                <th className="pb-2">Amount</th>
-                <th className="pb-2">Receipt</th>
+                <th className="pb-2" >Date</th>
+                <th className="pb-2">Total Amount</th>
+                <th className="pb-2">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -243,7 +239,7 @@ const OrderBody = ({ addIncomeModal }) => {
                     <td className="py-2">
                       <button
                         onClick={() => handleViewClick(entry)}
-                        className="text-cyan-400"
+                        className="text-[#ffeda5]"
                       >
                         View
                       </button>
