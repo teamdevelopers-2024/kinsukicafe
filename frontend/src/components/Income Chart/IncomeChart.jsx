@@ -279,19 +279,35 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
             <Line
               data={data}
               options={{
+                elements:{
+                  point:{
+                    pointStyle:true,
+                    hoverBackgroundColor:"#fff",
+                    hoverBorderColor:"#fff",
+                    radius:15,
+                    hoverRadius:50,
+                  },
+                  
+                },
+                
                 responsive: true,
                 plugins: {
-                  legend: {
+
+                   legend: {
                     display: false,
+
                   },
+
                   tooltip: {
                     backgroundColor: "#333",
                     titleColor: "#fff",
                     bodyColor: "#fff",
+                    
                   },
                 },
                 scales: {
                   x: {
+                    
                     grid: {
                       display: false, // Disable x-axis grid lines
                     },
@@ -304,6 +320,7 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
                     grid: {
                       display: false, // Disable y-axis grid lines
                     },
+                    
                   },
                 },
               }}
