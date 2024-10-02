@@ -113,6 +113,29 @@ async function addCategory(body) {
   }
 }
 
+
+async function addItem(body) {
+  try {
+    const response = await api.post('/addItem',body)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
+
+
+async function getItems() {
+  try {
+    const response = await api.get('/getItems')
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -122,5 +145,7 @@ export default {
   showExpense,
   getTodayIncomeAndExpense,
   getCatogory,
-  addCategory
+  addCategory,
+  addItem,
+  getItems
 };

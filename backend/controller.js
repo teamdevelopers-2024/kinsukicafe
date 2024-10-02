@@ -1,4 +1,5 @@
 import CategoryDb from "./model/CategoryDb.js"
+import itemDb from "./model/ItemsDb.js"
 
 
 
@@ -48,8 +49,61 @@ async function addCategory(req,res) {
 }
 
 
+async function addItem(req,res) {
+    try {
+        const data = req.body
+        const isItem = await itemDb.findOne({name:data.name})
+        if(isItem){
+            return res.status(400).json({
+                error:true,
+                message:"The Item Is Already Exist"
+            })
+        }
+        await itemDb.create({
+            name:data.name,
+            category:data.category,
+            price:data.price
+        })
+        await CategoryDb.updateOne(
+            { name: data.category },          
+            { $inc: { totalItems: 1 } }       
+          );
+        res.status(200).json({
+            error:false,
+            message:"item Added Successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internal Server Error"
+        })
+    }
+}
+
+
+
+async function getItems(req,res) {
+    try {
+        const data = await itemDb.find().sort({_id:-1})
+        res.status(200).json({
+            error:false,
+            data:data
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
+
 
 export default {
     getCategory,
-    addCategory
+    addCategory,
+    addItem,
+    getItems
 }
