@@ -10,12 +10,6 @@ const api = axios.create({
 })
 
 
-// Log the constructed URL for debugging
-const logRequestURL = (endpoint) => {
-  const url = `${api.defaults.baseURL}${endpoint}`;
-  console.log("Request URL is:", url); // Log the full request URL
-  return url;
-};
 
 // Login function
 async function login(body) {
@@ -45,18 +39,7 @@ async function addIncome(body) {
   }
 }
 
-// Add Customer function
-async function addCustomer(data) {
-  try {
-    console.log(data);
-    const response = await api.post("/addcustomer", data);
-    console.log("Data submitted successfully:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Error submitting the data:", error);
-    return error.response ? error.response.data : "Network error";
-  }
-}
+
 
 // Show Income function
 async function showIncome() {
@@ -93,28 +76,7 @@ async function showExpense() {
   }
 }
 
-// Show Customers function
-async function showCustomers() {
-  try {
-    const response = await api.get("/getCustomers");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching customers:", error);
-    return error.response ? error.response.data : "Network error";
-  }
-}
 
-// Repayment function
-async function repayment(customer, details) {
-  try {
-    const response = await api.put("/repayment", { customer, details });
-    console.log("Repayment response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error("Error processing repayment:", error);
-    return error.response ? error.response.data : "Network error";
-  }
-}
 
 // Get Today's Income and Expense function
 async function getTodayIncomeAndExpense() {
@@ -127,15 +89,15 @@ async function getTodayIncomeAndExpense() {
   }
 }
 
-// Add Credit function
-async function addCredit(body) {
+
+async function  getCategory(params) {
   try {
-    const response = await api.post("/addCredit", body);
-    console.log("Credit response:", response.data);
-    return response.data;
+    const response = await api.get('/getCategory')
+    const data = response.data
+    return data
   } catch (error) {
-    console.error("Error adding credit:", error);
-    return error.response ? error.response.data : "Network error";
+    console.log(error)
+    return error.response.data
   }
 }
 
@@ -143,12 +105,9 @@ async function addCredit(body) {
 export default {
   login,
   addIncome,
-  addCustomer,
   showIncome,
   addExpense,
   showExpense,
-  showCustomers,
-  repayment,
   getTodayIncomeAndExpense,
-  addCredit,
+  getCategory
 };

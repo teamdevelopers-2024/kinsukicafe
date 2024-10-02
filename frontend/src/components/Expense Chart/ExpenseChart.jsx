@@ -186,9 +186,9 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
   console.log(totalExpense,'totalexp')
   return (
     <>
-      <div className="bg-gray-800 p-8 rounded-xl flex justify-between items-center mb-8">
+      <div className="bg-[#00144c] p-8 rounded-xl flex justify-between items-center mb-8">
         <div className="text-left space-y-3 w-1/3">
-          <h2 className="text-5xl font-bold text-cyan-400">Total expense</h2>
+          <h2 className="text-5xl font-bold text-[#ffeda5]">Total expense</h2>
           <h3 className="text-3xl text-green-300 font-bold">
             {!isLoading ? new Intl.NumberFormat("en-IN", {
               style: "currency",
@@ -196,7 +196,7 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
             }).format(totalExpense) : <SpinnerOnly/>}
           </h3>
           <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
-          <h2 className="text-3xl font-bold text-cyan-400">
+          <h2 className="text-3xl font-bold text-[#ffeda5]">
             {timePeriod} expense
           </h2>
           <h3 className="text-3xl text-green-300 font-bold">
@@ -211,11 +211,11 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
 
         <div className="w-2/4 relative">
           <div className="absolute z-10 bottom--4 left-0 p-2">
-            <div className="bg-gray-700 px-1.5 py-1.5 rounded-full text-cyan-500">
+            <div className="bg-gray-700 px-1.5 py-1.5 rounded-full text-[#ffeda5]">
               <select
                 value={timePeriod}
                 onChange={handleTimePeriodChange}
-                className="cursor-pointer bg-gray-700 rounded-full text-cyan-500 outline-none"
+                className="cursor-pointer bg-gray-700 rounded-full text-[#ffeda5] outline-none"
               >
                 <option value="Daily" className="cursor-pointer">
                   Daily
@@ -243,7 +243,7 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
             {timePeriod === "Monthly" && (
               <>
                 <div
-                  className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-cyan-400 hover:bg-gray-600 transition"
+                  className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-[#ffeda5] hover:bg-gray-600 transition"
                   style={{
                     marginLeft: "-8%",
                     width: "6%",
@@ -253,12 +253,12 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
                     justifyContent: "center",
                   }}
                 >
-                  <button onClick={handlePrevYear} className="text-cyan-400">
+                  <button onClick={handlePrevYear} className="text-[#ffeda5]">
                     <FaChevronLeft />
                   </button>
                 </div>
                 <div
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-cyan-400 hover:bg-gray-600 transition"
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-[#ffeda5] hover:bg-gray-600 transition"
                   style={{
                     marginRight: "1%",
                     width: "6%",
@@ -268,7 +268,7 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
                     justifyContent: "center",
                   }}
                 >
-                  <button onClick={handleNextYear} className="text-cyan-400">
+                  <button onClick={handleNextYear} className="text-[#ffeda5]">
                     <FaChevronRight />
                   </button>
                 </div>
@@ -295,7 +295,7 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen , isLoading}) {
                       display: false, // Disable x-axis grid lines
                     },
                     ticks: {
-                      color: "#999", // X-axis label color
+                      color: "#fff", // X-axis label color
                     },
                   },
                   y: {

@@ -23,7 +23,7 @@ const Expense = ({ addExpenseModal }) => {
       try {
         setLoading(true); // Start loading
         const response = await api.showExpense();
-        setExpenseHistoryData(response.data);
+        setExpenseHistoryData([]);
       } catch (error) {
         console.error("Error fetching expense history data", error);
       } finally {
@@ -111,7 +111,7 @@ const Expense = ({ addExpenseModal }) => {
   const pageCount = Math.ceil(filteredEntries.length / entriesPerPage);
 
   return (
-    <div className="min-h-screen bg-gray-900 p-10 text-gray-100 relative">
+    <div className="min-h-screen bg-[#23346c] p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
         {/* Total Expense Section */}
 
@@ -121,9 +121,9 @@ const Expense = ({ addExpenseModal }) => {
           setPdfModalOpen={setPdfModalOpen}
         />
 
-        <div className="bg-gray-800 p-10 rounded-xl">
+        <div className="bg-[#00144c] p-10 rounded-xl">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-cyan-400">
+            <h3 className="text-2xl font-bold text-[#ffeda5]">
               Expense History
             </h3>
             <input
@@ -138,12 +138,8 @@ const Expense = ({ addExpenseModal }) => {
             <thead>
               <tr className="text-gray-500">
                 <th className="pb-2">Date</th>
-                <th className="pb-2">Payee Name</th>
-                <th className="pb-2">Expense Type</th>
-                <th className="pb-2">Payment Type</th>
-                <th className="pb-2">Phone Number</th>
-                <th className="pb-2">Amount</th>
-                <th className="pb-2">Receipt</th>
+                <th className="pb-2">Total Expense</th>
+                <th className="pb-2">Action</th>
               </tr>
             </thead>
             <tbody>

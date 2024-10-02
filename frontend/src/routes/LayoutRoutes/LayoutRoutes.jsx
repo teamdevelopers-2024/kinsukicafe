@@ -6,9 +6,10 @@ import LoadingSpinner from "../../components/spinner/Spinner";
 // Lazy import components
 const Login = React.lazy(() => import("../../pages/Login/Login"));
 const Home = React.lazy(() => import("../../pages/Home/Home"));
-const CreditCustomers = React.lazy(() => import("../../pages/Credit Customers/CreditCustomers"));
-const Income = React.lazy(() => import("../../pages/Income/Income"));
+const Income = React.lazy(() => import("../../pages/Order/Order"));
 const Expense = React.lazy(() => import("../../pages/Expense/Expense"));
+const Category = React.lazy(()=> import("../../pages/catogory/Catogery"))
+const Items = React.lazy(()=> import("../../pages/Items/Items"))
 
 function LayoutRoutes() {
 
@@ -29,10 +30,10 @@ function LayoutRoutes() {
           <Route path="/" element={<Login />} />
           <Route element={<PrivateRoutes />}>
             <Route path="/home" element={<Home />} />
-            <Route path="/items" element={<CreditCustomers />} />
+            <Route path="/items" element={< Items/>} />
             <Route path="/order" element={<Income />} />
             <Route path="/expense" element={<Expense />} />
-            {/* <Route path="/category" element={<Expense />} /> */}
+            <Route path="/category" element={<Category />} />
           </Route>
           <Route path="*" element={<Login />} />
         </Routes>
