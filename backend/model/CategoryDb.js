@@ -7,6 +7,6 @@ const categorySchema = new mongoose.Schema({
     },
 });
 
-const categoryDb = mongoose.model("Category", categorySchema);
+const CategoryDb = mongoose.model("CategoryDb", categorySchema);
 
-export default categoryDb;
+export default CategoryDb;
