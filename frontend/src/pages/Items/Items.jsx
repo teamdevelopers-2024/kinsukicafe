@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import ItemsBody from "../../components/items/ItemsBody";
+import ItemsBody from "../../components/Item Body/ItemsBody";
 
 const Items = () => {
   return (

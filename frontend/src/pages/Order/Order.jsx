@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
-import AddIncome from "../../components/Add Income/AddIncome";
+import AddIncome from "../../components/Add Order/AddOrder";
 import OrderBody from "../../components/OrderBody/OrderBody";
 
 const Order = () => {
-  const [addIncomeModal, setAddIncomeModal] = useState(false);
+  const [addOrderModal, setAddOrderModal] = useState(false);
   return (
     <>
-      <Navbar setAddIncomeModal={setAddIncomeModal} />
-      <OrderBody addIncomeModal={addIncomeModal} />
-      {addIncomeModal && <AddIncome setAddIncomeModal={setAddIncomeModal} />}
+      <Navbar setAddOrderModal={setAddOrderModal} />
+      <OrderBody addOrderModal={addOrderModal} />
+      {addOrderModal && <AddOrder setAddOrderModal={setAddOrderModal} />}
     </>
   );
 };
