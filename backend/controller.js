@@ -21,6 +21,35 @@ async function getCategory(req,res){
 
 
 
+async function addCategory(req,res) {
+    try {
+        const category = req.body.categoryName
+        const isCat = await CategoryDb.findOne({name:category})
+        if(isCat){
+            return res.status(400).json({
+                error:true,
+                message:"Category is Already Exist"
+            })
+        }
+        await CategoryDb.create({
+            name:category
+        })
+        res.status(200).json({
+            error:false,
+            message:"category added successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
+
+
 export default {
-    getCategory
+    getCategory,
+    addCategory
 }
