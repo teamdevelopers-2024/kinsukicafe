@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import jsPDF from "jspdf";
-import imgData from "../../assets/logocropped.jpg";
+// import imgData from "../../assets/logocropped.jpg";
 
 const ViewIncomeModal = ({ entry, onClose }) => {
   const formatDate = (date) => {
@@ -11,91 +11,91 @@ const ViewIncomeModal = ({ entry, onClose }) => {
     return `${day}-${month}-${year}`;
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
+  // const generatePDF = () => {
+  //   const doc = new jsPDF();
 
-    doc.setFillColor(0, 0, 0);
-    doc.rect(0, 0, doc.internal.pageSize.getWidth(), 35, "F");
+  //   doc.setFillColor(0, 0, 0);
+  //   doc.rect(0, 0, doc.internal.pageSize.getWidth(), 35, "F");
 
-    doc.addImage(imgData, "PNG", 10, 10, 50, 20);
+  //   doc.addImage(imgData, "PNG", 10, 10, 50, 20);
 
-    doc.setTextColor(255, 255, 255);
+  //   doc.setTextColor(255, 255, 255);
 
-    // Add Shop Name and Address
-    doc.setFontSize(12);
-    doc.text("Sea Land Car Care", 160, 20); // Center-aligned shop name
-    doc.text("Oorakam Karimbily, Vengara", 150, 25);
-    doc.text("Phone: +91 92071 50011", 155, 30);
+  //   // Add Shop Name and Address
+  //   doc.setFontSize(12);
+  //   doc.text("Sea Land Car Care", 160, 20); // Center-aligned shop name
+  //   doc.text("Oorakam Karimbily, Vengara", 150, 25);
+  //   doc.text("Phone: +91 92071 50011", 155, 30);
 
-    // Reset text color for the rest of the document
-    doc.setTextColor(0, 0, 0); // Black color for other text
+  //   // Reset text color for the rest of the document
+  //   doc.setTextColor(0, 0, 0); // Black color for other text
 
-    // Add a separator line
-    doc.line(10, 35, 200, 35);
+  //   // Add a separator line
+  //   doc.line(10, 35, 200, 35);
 
-    // Add Invoice Date and Number
-    doc.setFontSize(10);
-    doc.text(
-      `Service Date: ${new Date(entry.workDate).toLocaleDateString()}`,
-      10,
-      50
-    );
-    doc.text(`Reciept Date: ${formatDate(new Date())}`, 160, 50);
+  //   // Add Invoice Date and Number
+  //   doc.setFontSize(10);
+  //   doc.text(
+  //     `Service Date: ${new Date(entry.workDate).toLocaleDateString()}`,
+  //     10,
+  //     50
+  //   );
+  //   doc.text(`Reciept Date: ${formatDate(new Date())}`, 160, 50);
 
-    // Add Customer Information
-    doc.setFontSize(12);
-    doc.text(`Customer: ${entry.customerName}`, 10, 60);
-    doc.text(`Phone: ${entry.contactNumber}`, 10, 70);
-    doc.text(`Vehicle Number: ${entry.vehicleNumber}`, 140, 70);
+  //   // Add Customer Information
+  //   doc.setFontSize(12);
+  //   doc.text(`Customer: ${entry.customerName}`, 10, 60);
+  //   doc.text(`Phone: ${entry.contactNumber}`, 10, 70);
+  //   doc.text(`Vehicle Number: ${entry.vehicleNumber}`, 140, 70);
 
-    // Add a separator line
-    doc.line(10, 75, 200, 75);
+  //   // Add a separator line
+  //   doc.line(10, 75, 200, 75);
 
-    // Add table headers for items (compact)
-    doc.setFontSize(12);
-    doc.setFont("bold");
-    doc.text("No.", 10, 82);
-    doc.text("Description", 40, 82);
-    doc.text("Reference", 100, 82);
-    doc.text("Amount", 160, 82);
+  //   // Add table headers for items (compact)
+  //   doc.setFontSize(12);
+  //   doc.setFont("bold");
+  //   doc.text("No.", 10, 82);
+  //   doc.text("Description", 40, 82);
+  //   doc.text("Reference", 100, 82);
+  //   doc.text("Amount", 160, 82);
 
-    // Add a separator line
-    doc.line(10, 85, 200, 85);
+  //   // Add a separator line
+  //   doc.line(10, 85, 200, 85);
 
-    // Add table rows for items with index numbers
-    doc.setFont("normal");
-    entry.workDescriptions.forEach((item, index) => {
-      const yOffset = 90 + index * 10; // Adjust row height for each item
-      doc.text(`${index + 1}`, 10, yOffset); // Index number
-      doc.text(`${item.description}`, 40, yOffset); // Description
-      doc.text(`${item.reference}`, 100, yOffset); // reference
-      doc.text(`${parseFloat(item.amount).toLocaleString()}`, 160, yOffset);
-    });
+  //   // Add table rows for items with index numbers
+  //   doc.setFont("normal");
+  //   entry.workDescriptions.forEach((item, index) => {
+  //     const yOffset = 90 + index * 10; // Adjust row height for each item
+  //     doc.text(`${index + 1}`, 10, yOffset); // Index number
+  //     doc.text(`${item.description}`, 40, yOffset); // Description
+  //     doc.text(`${item.reference}`, 100, yOffset); // reference
+  //     doc.text(`${parseFloat(item.amount).toLocaleString()}`, 160, yOffset);
+  //   });
 
-    // Add a separator line after the items
-    const itemsEndY = 90 + entry.workDescriptions.length * 10;
-    doc.line(10, itemsEndY + 5, 200, itemsEndY + 5);
+  //   // Add a separator line after the items
+  //   const itemsEndY = 90 + entry.workDescriptions.length * 10;
+  //   doc.line(10, itemsEndY + 5, 200, itemsEndY + 5);
 
-    // Add Total
-    doc.setFont("bold");
-    doc.text("Total:", 140, itemsEndY + 15);
-    doc.text(
-      `${parseFloat(entry.totalServiceCost).toLocaleString()}`,
-      160,
-      itemsEndY + 15
-    );
+  //   // Add Total
+  //   doc.setFont("bold");
+  //   doc.text("Total:", 140, itemsEndY + 15);
+  //   doc.text(
+  //     `${parseFloat(entry.totalServiceCost).toLocaleString()}`,
+  //     160,
+  //     itemsEndY + 15
+  //   );
 
-    // Add a separator line
-    doc.line(10, itemsEndY + 20, 200, itemsEndY + 20);
+  //   // Add a separator line
+  //   doc.line(10, itemsEndY + 20, 200, itemsEndY + 20);
 
-    // Add Footer (Thank You Note, etc.)
-    doc.setFont("normal");
-    doc.text("Thank you for your visit!", 70, itemsEndY + 30);
-    doc.text("Visit us again!", 80, itemsEndY + 35);
+  //   // Add Footer (Thank You Note, etc.)
+  //   doc.setFont("normal");
+  //   doc.text("Thank you for your visit!", 70, itemsEndY + 30);
+  //   doc.text("Visit us again!", 80, itemsEndY + 35);
 
-    // Save the PDF with the customer's name
-    doc.save(`${entry.customerName.replace(/[^a-zA-Z0-9]/g, "_")}_receipt.pdf`);
-  };
+  //   // Save the PDF with the customer's name
+  //   doc.save(`${entry.customerName.replace(/[^a-zA-Z0-9]/g, "_")}_receipt.pdf`);
+  // };
 
   if (!entry) return null;
 

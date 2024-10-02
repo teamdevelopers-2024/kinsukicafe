@@ -1,5 +1,5 @@
 import React from 'react';
-import Logo from "../../assets/logoNoBackgroundCropped.png";
+import Logo from "../../assets/logo - 1.jpg";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/authContext';
 import logoutIcon from '../../assets/logoutIcon.png';
@@ -19,7 +19,7 @@ const Navbar = ({ setAddIncomeModal, setAddExpenseModal }) => {
   const pathSegment = location.pathname.split("/").filter(Boolean).pop();
 
   return (
-    <nav className="bg-gray-900 p-4">
+    <nav className="bg-[#23346c] p-4">
       <div className="container mx-auto flex justify-between items-center">
         {/* Logo */}
         <div className="flex items-center ml-20">
@@ -35,7 +35,7 @@ const Navbar = ({ setAddIncomeModal, setAddExpenseModal }) => {
           <li>
             <a
               onClick={() => navigate('/home')}
-              className={`cursor-pointer ${pathSegment == 'home' ? 'text-red-600 font-semibold border-b-2 border-red-600' : 'hover:text-white'}`}
+              className={`cursor-pointer ${pathSegment == 'home' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'}`}
             >
               Home
             </a>
@@ -43,25 +43,33 @@ const Navbar = ({ setAddIncomeModal, setAddExpenseModal }) => {
           <li>
             <a
               onClick={() => navigate('/expense')}
-              className={`${pathSegment === 'expense' ? 'text-red-600 font-semibold border-b-2 border-red-600' : 'hover:text-white'} cursor-pointer`}
+              className={`${pathSegment === 'expense' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'} cursor-pointer`}
             >
-              Expenses
+              Expense
             </a>
           </li>
           <li>
             <a
-              onClick={() => navigate('/income')}
-              className={`${pathSegment === 'income' ? 'text-red-600 font-semibold border-b-2 border-red-600' : 'hover:text-white'} cursor-pointer`}
+              onClick={() => navigate('/order')}
+              className={`${pathSegment === 'order' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'} cursor-pointer`}
             >
-              Income
+              Order
             </a>
           </li>
           <li>
             <a
-              onClick={() => navigate('/credit')}
-              className={`${pathSegment === 'credit' ? 'text-red-600 font-semibold border-b-2 border-red-600' : 'hover:text-white'} cursor-pointer`}
+              onClick={() => navigate('/items')}
+              className={`${pathSegment === 'items' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'} cursor-pointer`}
             >
-              Credit Customers
+              Items
+            </a>
+          </li>
+          <li>
+            <a
+              onClick={() => navigate('/category')}
+              className={`${pathSegment === 'category' ? 'text-[#ffeda5] font-semibold border-b-2 border-[#ffeda5]' : 'hover:text-white'} cursor-pointer`}
+            >
+              Category
             </a>
           </li>
         </ul>
@@ -72,13 +80,13 @@ const Navbar = ({ setAddIncomeModal, setAddExpenseModal }) => {
           {/* Add Expense Button or Invisible Placeholder */}
           <div className="flex items-center">
             {pathSegment === 'income' && (
-              <button onClick={() => setAddIncomeModal(true)} className="cursor-pointer border border-red-600 bg-red-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#e93737] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
+              <button onClick={() => setAddIncomeModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
                 <img src={incomeIcon} alt="" />
                 Add Income
               </button>
             )}
             {pathSegment === 'expense' && (
-              <button onClick={() => setAddExpenseModal(true)} className="cursor-pointer border border-red-600 bg-red-600 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#e93737] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
+              <button onClick={() => setAddExpenseModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
                 <img src={incomeIcon} alt="" />
                 Add Expense
               </button>

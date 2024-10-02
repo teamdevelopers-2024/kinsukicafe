@@ -7,7 +7,7 @@ import IncomeChart from "../Income Chart/IncomeChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 
-const IncomeBody = ({ addIncomeModal }) => {
+const OrderBody = ({ addIncomeModal }) => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
   const [viewIncomeModal, setViewIncomeModal] = useState(false);
   const [singleEntry, setSingleEntry] = useState({});
@@ -25,7 +25,7 @@ const IncomeBody = ({ addIncomeModal }) => {
         const sortedData = response.data.sort(
           (a, b) => new Date(b.workDate) - new Date(a.workDate)
         );
-        setIncomeHistoryData(sortedData);
+        setIncomeHistoryData([]);
         console.log(sortedData); // Log sorted data
       } catch (error) {
         console.error("Error fetching income history data", error);
@@ -189,7 +189,7 @@ const IncomeBody = ({ addIncomeModal }) => {
 
 
   return (
-    <div className="min-h-screen bg-gray-900 p-10 text-gray-100 relative">
+    <div className="min-h-screen bg-[#23346c] p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
@@ -200,7 +200,7 @@ const IncomeBody = ({ addIncomeModal }) => {
         {/* Income History Table */}
         <div className="bg-gray-800 p-10 rounded-lg">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-bold text-cyan-400">Income History</h3>
+            <h3 className="text-2xl font-bold text-[#ffeda5]">Order History</h3>
             <input
               type="text"
               value={searchQuery}
@@ -306,4 +306,4 @@ const IncomeBody = ({ addIncomeModal }) => {
   );
 };
 
-export default IncomeBody;
+export default OrderBody;
