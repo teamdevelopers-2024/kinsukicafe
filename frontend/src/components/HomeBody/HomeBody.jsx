@@ -210,7 +210,8 @@ function HomeBody() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        {/* On large screen start*/}
+        <div className="space-y-4 sm:flex-row">
           {/* Card 3 - Today's Customers */}
           <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
             {transitions(
@@ -248,7 +249,7 @@ function HomeBody() {
           </div>
 
           {/* Card 4 - Yesterday's Revenue */}
-          <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+          <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden sm:hidden lg:flex">
             {transitions(
               (styles, item) =>
                 item && (
@@ -290,6 +291,87 @@ function HomeBody() {
             <p className="invisible">hello</p>
           </div>
         </div>
+        {/* On large screen end */}
+
+        {/* On small screen start */}
+        {/* <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+            {transitions(
+              (styles, item) =>
+                item && (
+                  <animated.div
+                    style={styles}
+                    className="absolute inset-0 rounded-xl"
+                  />
+                )
+            )}
+            <div className="flex flex-row justify-between">
+              <h2 className="text-lg text-[#ffeda5] mb-2">Today's Customers</h2>
+              <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
+                <img src={customersIcon} alt="" />
+              </div>
+            </div>
+            {data.todayCustomerCount || data.todayCustomerCount == 0 ? <p className="text-2xl font-bold">
+              <animated.span
+                style={{
+                  transform: todayCustomerCountSpring.scale.to(
+                    (s) => `scale(${s})`
+                  ),
+                  position: "relative",
+                  display: "inline-block",
+                  overflow: "hidden",
+                }}
+                className="number-glance-effect"
+              >
+                {todayCustomerCountSpring.number.to((n) => n.toFixed(0))}
+              </animated.span>
+            </p> : <SpinnerOnly />}
+
+            <p className="invisible">hello</p>
+          </div> */}
+
+          {/* Card 4 - Yesterday's Revenue */}
+          <div className="hidden bg-[#00144c] p-6 rounded-xl flex-col justify-between relative overflow-hidden lg:hidden xl:hidden sm:flex">
+            {transitions(
+              (styles, item) =>
+                item && (
+                  <animated.div
+                    style={styles}
+                    className="absolute inset-0 rounded-xl"
+                  />
+                )
+            )}
+            <div className="flex flex-row justify-between">
+              <h2 className="text-lg text-[#ffeda5] mb-2">
+                Yesterday's Revenue
+              </h2>
+              <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
+                <img src={revenueIcon} alt="" />
+              </div>
+            </div>
+            {data.yesterdayIncome || data.yesterdayIncome == 0 ? <p className="text-2xl font-bold">
+              <animated.span
+                style={{
+                  transform: yesterdayIncomeSpring.scale.to(
+                    (s) => `scale(${s})`
+                  ),
+                  position: "relative",
+                  display: "inline-block",
+                  overflow: "hidden",
+                }}
+                className="number-glance-effect"
+              >
+                {yesterdayIncomeSpring.number.to((n) =>
+                  new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(n.toFixed(0))
+                )}
+              </animated.span>
+            </p> : <SpinnerOnly />}
+
+            <p className="invisible">hello</p>
+          </div>
+          {/* On small screen end */}
       </div>
       <div className="mt-8">
         <div className="flex justify-between px-3">
