@@ -213,13 +213,9 @@ const OrderBody = ({ addIncomeModal }) => {
           <table className="w-full text-left">
             <thead>
               <tr className="text-gray-500">
-                <th className="pb-2">Date</th>
-                <th className="pb-2">Customer Name</th>
-                <th className="pb-2">Vehicle Number</th>
-                <th className="pb-2">Payment Type</th>
-                <th className="pb-2">Phone Number</th>
-                <th className="pb-2">Amount</th>
-                <th className="pb-2">Receipt</th>
+                <th className="pb-2" >Date</th>
+                <th className="pb-2">Total Amount</th>
+                <th className="pb-2">Action</th>
               </tr>
             </thead>
             <tbody>
