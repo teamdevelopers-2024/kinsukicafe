@@ -113,10 +113,9 @@ const ItemsBody = () => {
                   </tr>
                 ) : (
                     <tr className="border-t border-gray-600">
-                      <td className="px-4 py-2">juice</td>
-                      <td className="px-4 py-2">shake</td>
-                      <td className="px-4 py-2">$600</td>
-                     
+                      <td className="px-4 py-2"></td>
+                      <td className="px-4 py-2"></td>
+                      <td className="px-4 py-2"></td>
                     </tr>
                 
                 )}

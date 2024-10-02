@@ -90,9 +90,21 @@ async function getTodayIncomeAndExpense() {
 }
 
 
-async function  getCategory(params) {
+async function  getCatogory() {
   try {
     const response = await api.get('/getCategory')
+    const data = response.data
+    return data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
+
+async function addCategory(body) {
+  try {
+    const response = await api.post('/addCategory',body)
     const data = response.data
     return data
   } catch (error) {
@@ -109,5 +121,6 @@ export default {
   addExpense,
   showExpense,
   getTodayIncomeAndExpense,
-  getCategory
+  getCatogory,
+  addCategory
 };

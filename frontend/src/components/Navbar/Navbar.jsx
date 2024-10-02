@@ -5,7 +5,7 @@ import { useAuth } from '../../context/authContext';
 import logoutIcon from '../../assets/logoutIcon.png';
 import incomeIcon from '../../assets/IncomeIcon.svg';
 
-const Navbar = ({ setAddOrder, setAddExpenseModal }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
@@ -32,12 +32,12 @@ const Navbar = ({ setAddOrder, setAddExpenseModal }) => {
       <nav className="bg-[#23346c] p-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center ml-4 md:ml-20">
+          <div className="flex items-center">
             <img src={Logo} alt="Logo" className="h-12 w-28" />
           </div>
 
           {/* Desktop Navigation Links */}
-          <ul className="hidden md:flex space-x-8 text-gray-300">
+          <ul className="flex md:space-x-8 sm:space-x-2 space-x-3 text-gray-300">
             <li>
               <a
                 onClick={() => navigate('/home')}
@@ -81,19 +81,7 @@ const Navbar = ({ setAddOrder, setAddExpenseModal }) => {
           </ul>
 
           {/* Icons and Add Income/Expense Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            {pathSegment === 'income' && (
-              <button onClick={() => setAddIncomeModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
-                <img src={incomeIcon} alt="Income Icon" />
-                Add Income
-              </button>
-            )}
-            {pathSegment === 'expense' && (
-              <button onClick={() => setAddExpenseModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2">
-                <img src={incomeIcon} alt="Expense Icon" />
-                Add Expense
-              </button>
-            )}
+          <div className="flex items-center space-x-2 md:space-x-4">
             <button
               className="cursor-pointer border border-cyan-600 bg-[#00A1B7] bg-opacity-20 text-white font-semibold py-2 px-3 rounded-lg shadow-md hover:bg-cyan-500 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 flex gap-2"
               onClick={handleLogout}
