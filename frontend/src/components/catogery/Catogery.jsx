@@ -1,37 +1,41 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import api from '../../services/api';
 
 function CatogeryBody() {
-  // State to hold categories and total items
   const [categories, setCategories] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // Search term state
+  const [addCategory , setAddCategory] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Function to add a new category (mock data for now)
-  const handleAddCategory = () => {
-    const newCategory = {
-      name: `Category ${categories.length + 1}`, // Dynamically generate category name
-      totalItems: Math.floor(Math.random() * 100), // Random total items (for example purposes)
-    };
-    setCategories([...categories, newCategory]);
-  };
+  useEffect(()=>{
+    const fetchData = async()=>{
+        try {
+            const result = await api.getCatogory()
+            if(!result.error){
+              setCategories(result.data)
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    fetchData
+  },[])
 
-  // Handle search filtering
+
+
   const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className='min-h-screen bg-[#23346c] p-10 text-gray-100 relative'>
-      {/* Add Category and Search Bar Section */}
       <div className='flex justify-end gap-4 items-center mb-8'>
-        {/* Button to Add New Category */}
         <button
-          onClick={handleAddCategory}
+          onClick={()=>setAddCategory(true)}
           className='bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-700'
         >
           Add Category
         </button>
 
-        {/* Search Input */}
         <input
           type='text'
           placeholder='Search Category...'
@@ -41,7 +45,6 @@ function CatogeryBody() {
         />
       </div>
 
-      {/* Responsive Table */}
       <div className='overflow-x-auto'>
         <table className='table-auto w-full text-left'>
           <thead>

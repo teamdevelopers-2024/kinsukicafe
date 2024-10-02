@@ -49,7 +49,7 @@ app.get("/", async (req, res) => {
 });
 
 // API routes
-// app.use('/api', router);
+app.use('/api', router);
 
 // Start the server
 const port = process.env.PORT || 3000;
