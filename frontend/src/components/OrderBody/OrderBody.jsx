@@ -7,11 +7,12 @@ import IncomeChart from "../Income Chart/IncomeChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddOrder from "../Add Order/AddOrder";
+import logo from '../../assets/logoPDF.png'
 
 const OrderBody = ({ addIncomeModal }) => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
-  const [viewIncomeModal, setViewIncomeModal] = useState(false);
-  const [singleEntry, setSingleEntry] = useState({});
+  // const [viewIncomeModal, setViewIncomeModal] = useState(false);
+  // const [singleEntry, setSingleEntry] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,142 +70,306 @@ const OrderBody = ({ addIncomeModal }) => {
   // };
 
   // PDF Generation logic
-  // const generatePDF = (
-  //   startDate,
-  //   endDate,
-  //   selectedOption,
-  //   selectedMonth,
-  //   selectedYear
-  // ) => {
-  //   const doc = new jsPDF();
-  //   doc.setFontSize(12);
+  const generateTotalPDF = (
+    startDate,
+    endDate,
+    selectedOption,
+    selectedMonth,
+    selectedYear
+  ) => {
+    const doc = new jsPDF();
+    doc.setFontSize(12);
 
-  //   // Adjust endDate to include the entire day
-  //   endDate.setHours(23, 59, 59, 999);
+    // Adjust endDate to include the entire day
+    endDate.setHours(23, 59, 59, 999);
 
-  //   // Dynamic title based on selected options
-  //   let title;
-  //   if (selectedOption === "monthly") {
-  //     title = `Income History for ${new Date(
-  //       selectedYear,
-  //       selectedMonth - 1
-  //     ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
-  //   } else if (selectedOption === "yearly") {
-  //     title = `Income History for ${selectedYear}`;
-  //   } else {
-  //     title = `Income History from ${startDate.toLocaleDateString(
-  //       "en-IN"
-  //     )} to ${endDate.toLocaleDateString("en-IN")}`;
-  //   }
+    // Dynamic title based on selected options
+    let title;
+    if (selectedOption === "monthly") {
+      title = `Income History for ${new Date(
+        selectedYear,
+        selectedMonth - 1
+      ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
+    } else if (selectedOption === "yearly") {
+      title = `Income History for ${selectedYear}`;
+    } else {
+      title = `Income History from ${startDate.toLocaleDateString(
+        "en-IN"
+      )} to ${endDate.toLocaleDateString("en-IN")}`;
+    }
 
-  //   const headers = [
-  //     "Date",
-  //     "Name",
-  //     "Vehicle Number",
-  //     "Phone Number",
-  //     "UPI",
-  //     "Cash",
-  //   ];
+    const headers = [
+      "Date",
+      "Name",
+      "Vehicle Number",
+      "Phone Number",
+      "UPI",
+      "Cash",
+    ];
 
-  //   const filteredData = incomeHistoryData.filter((entry) => {
-  //     const entryDate = new Date(entry.workDate);
-  //     return entryDate >= startDate && entryDate <= endDate;
+    const filteredData = incomeHistoryData.filter((entry) => {
+      const entryDate = new Date(entry.workDate);
+      return entryDate >= startDate && entryDate <= endDate;
+    });
+
+    const columnWidths = [30, 35, 40, 40, 30, 30];
+
+    // Add title
+    if (typeof title === "string") {
+      doc.text(title, 75, 10);
+    }
+
+    headers.forEach((header, index) => {
+      const xPosition =
+        10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+      if (typeof header === "string") {
+        doc.text(header, xPosition, 25);
+      }
+    });
+
+    // Add a separator line
+    doc.line(10, 30, 200, 30);
+
+    let totalUPI = 0;
+    let totalCash = 0;
+
+    filteredData.forEach((entry, index) => {
+      const entryDate = new Date(entry.workDate).toLocaleDateString("en-GB");
+      const upiAmount =
+        entry.paymentMethod === "UPI" || entry.paymentMethod === "Repaid-UPI"
+          ? entry.totalServiceCost.toFixed(2)
+          : "";
+      const cashAmount =
+        entry.paymentMethod === "Cash" || entry.paymentMethod === "Repaid-Cash"
+          ? entry.totalServiceCost.toFixed(2)
+          : "";
+
+      const row = [
+        entryDate,
+        entry.customerName,
+        entry.vehicleNumber,
+        entry.contactNumber ? entry.contactNumber.toString() : "",
+        upiAmount,
+        cashAmount,
+      ];
+
+      // Accumulate totals based on payment method
+      if (entry.paymentMethod === "UPI") {
+        totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
+      } else if (entry.paymentMethod === "Cash") {
+        totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
+      }
+
+      row.forEach((cell, cellIndex) => {
+        const xPosition =
+          10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
+        if (typeof cell === "string") {
+          doc.text(cell, xPosition, 35 + index * 10);
+        }
+      });
+    });
+
+    const totalRowYPosition = 35 + filteredData.length * 10;
+    doc.line(10, totalRowYPosition, 200, totalRowYPosition);
+    const totalIncome = totalUPI + totalCash;
+
+    doc.text(
+      `Total Income (UPI): ${totalUPI.toFixed(2)}`,
+      130,
+      totalRowYPosition + 10
+    );
+    doc.text(
+      `Total Income (Cash): ${totalCash.toFixed(2)}`,
+      130,
+      totalRowYPosition + 20
+    );
+    doc.text(
+      `Total Income (Overall): ${totalIncome.toFixed(2)}`,
+      130,
+      totalRowYPosition + 30
+    );
+
+    const fileName = (() => {
+      if (selectedOption === "custom") {
+        return `income_history_${startDate.toLocaleDateString(
+          "en-GB"
+        )}_to_${endDate.toLocaleDateString("en-GB")}.pdf`;
+      } else if (selectedOption === "yearly") {
+        return `income_history_${selectedYear}.pdf`;
+      } else {
+        return `income_history_${new Date(
+          selectedYear,
+          selectedMonth - 1
+        ).toLocaleString("default", { month: "long" })}_${selectedYear}.pdf`;
+      }
+    })();
+
+    doc.save(fileName);
+  };
+
+  // const generatePDF = (order) => {
+  //   const width = 75;
+  //   const itemHeight = 8; // Height for each item
+  //   const footerHeight = 25; // Space needed for footer
+  //   const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
+
+  //   const itemCount = order.orderDetails.length;
+  //   const totalHeight =
+  //     40 + Math.min(itemCount, maxVisibleItems) * itemHeight + footerHeight; // Dynamic height based on items
+
+  //   const doc = new jsPDF({
+  //     orientation: "portrait",
+  //     unit: "mm",
+  //     format: [width, totalHeight],
+  //     hotfixes: [],
   //   });
 
-  //   const columnWidths = [30, 35, 40, 40, 30, 30];
+  //   doc.setTextColor(0, 0, 0);
 
-  //   // Add title
-  //   if (typeof title === "string") {
-  //     doc.text(title, 75, 10);
-  //   }
+  //   // Shop Information
+  //   doc.setFontSize(8);
+  //   doc.text("Receipt", 35, 4);
+  //   doc.line(34.9, 5, 44.9, 5);
+  //   doc.text("Kinsuki Cafe, Near Vayaloram, Kottakkal", 15, 8);
+  //   doc.text("Phone: +91 98765 43210", 25, 12);
+  //   doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //   doc.line(5, 14, 70, 14);
+  //   doc.setLineDash([]); // Reset to solid lines
+  //   doc.setFontSize(7);
+  //   doc.text(`${order.date}`, 25, 18);
+  //   doc.text(`11:13:06 AM`, 40, 18);
 
-  //   headers.forEach((header, index) => {
-  //     const xPosition =
-  //       10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-  //     if (typeof header === "string") {
-  //       doc.text(header, xPosition, 25);
-  //     }
+  //   doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //   doc.line(5, 21, 70, 21);
+  //   doc.setLineDash([]);
+
+  //   let startY = 24; // Adjust starting Y position
+
+  //   // Table headers
+  //   doc.setFontSize(7);
+  //   doc.text("No", 5, startY); // Index Number Header
+  //   doc.text("Item", 15, startY);
+  //   doc.text("Qty", 50, startY);
+  //   doc.text("Total", 62, startY);
+  //   doc.line(5, startY + 3, 70, startY + 3); // Header line
+
+  //   // Add items to the receipt
+  //   order.orderDetails.forEach((detail, index) => {
+  //     const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
+  //     doc.text((index + 1).toString(), 5, yOffset); // Index number
+  //     doc.text(detail.item, 15, yOffset);
+  //     doc.text(detail.quantity.toString(), 50, yOffset);
+  //     doc.text(`${detail.total.toFixed(2)}`, 62, yOffset);
   //   });
 
-  //   // Add a separator line
-  //   doc.line(10, 30, 200, 30);
+  //   // Add a separator line after the items
+  //   const itemsEndY =
+  //     startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
+  //   doc.line(5, itemsEndY + 5, 70, itemsEndY + 5);
 
-  //   let totalUPI = 0;
-  //   let totalCash = 0;
+  //   // Calculate total position
+  //   const totalY = itemsEndY + 10;
+  //   doc.setFont("bold");
+  //   doc.text("Total:", 50, totalY);
+  //   doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
 
-  //   filteredData.forEach((entry, index) => {
-  //     const entryDate = new Date(entry.workDate).toLocaleDateString("en-GB");
-  //     const upiAmount =
-  //       entry.paymentMethod === "UPI" || entry.paymentMethod === "Repaid-UPI"
-  //         ? entry.totalServiceCost.toFixed(2)
-  //         : "";
-  //     const cashAmount =
-  //       entry.paymentMethod === "Cash" || entry.paymentMethod === "Repaid-Cash"
-  //         ? entry.totalServiceCost.toFixed(2)
-  //         : "";
+  //   // Add Footer
+  //   const footerY = totalY + 10;
+  //   doc.setFont("normal");
+  //   doc.text("Thank you for your business!", 28, footerY);
+  //   doc.text("Visit us again!", 33, footerY + 5);
 
-  //     const row = [
-  //       entryDate,
-  //       entry.customerName,
-  //       entry.vehicleNumber,
-  //       entry.contactNumber ? entry.contactNumber.toString() : "",
-  //       upiAmount,
-  //       cashAmount,
-  //     ];
+  //   // Save the PDF with a unique name
+  //   doc.save(`receipt_${order.orderID}.pdf`);
+  // };
 
-  //     Accumulate totals based on payment method
-  //     if (entry.paymentMethod === "UPI") {
-  //       totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
-  //     } else if (entry.paymentMethod === "Cash") {
-  //       totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
-  //     }
+  //   const generatePDF = (order) => {
+  //     const width = 75;
+  //     const itemHeight = 8; // Height for each item
+  //     const footerHeight = 25; // Space needed for footer
+  //     const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
 
-  //     row.forEach((cell, cellIndex) => {
-  //       const xPosition =
-  //         10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
-  //       if (typeof cell === "string") {
-  //         doc.text(cell, xPosition, 35 + index * 10);
-  //       }
+  //     const itemCount = order.orderDetails.length;
+  //     const totalHeight =
+  //       40 + Math.min(itemCount, maxVisibleItems) * itemHeight + footerHeight; // Dynamic height based on items
+
+  //     const doc = new jsPDF({
+  //       orientation: "portrait",
+  //       unit: "mm",
+  //       format: [width, totalHeight],
+  //       hotfixes: [],
   //     });
-  //   });
 
-  //   const totalRowYPosition = 35 + filteredData.length * 10;
-  //   doc.line(10, totalRowYPosition, 200, totalRowYPosition);
-  //   const totalIncome = totalUPI + totalCash;
+  //     doc.setTextColor(0, 0, 0);
 
-  //   doc.text(
-  //     `Total Income (UPI): ${totalUPI.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 10
-  //   );
-  //   doc.text(
-  //     `Total Income (Cash): ${totalCash.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 20
-  //   );
-  //   doc.text(
-  //     `Total Income (Overall): ${totalIncome.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 30
-  //   );
+  //     // Shop Information
+  //     doc.setFontSize(8);
+  //     doc.text("Receipt", 35, 4);
+  //     doc.line(34.9, 5, 44.9, 5);
+  //     doc.text("Kinsuki Cafe, Near Vayaloram, Kottakkal", 15, 8);
+  //     doc.text("Phone: +91 98765 43210", 25, 12);
+  //     doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //     doc.line(5, 14, 70, 14);
+  //     doc.setLineDash([]); // Reset to solid lines
+  //     doc.setFontSize(7);
+  //     doc.text(`${order.date}`, 25, 18);
+  //     doc.text(`11:13:06 AM`, 40, 18);
 
-  //   const fileName = (() => {
-  //     if (selectedOption === "custom") {
-  //       return `income_history_${startDate.toLocaleDateString(
-  //         "en-GB"
-  //       )}_to_${endDate.toLocaleDateString("en-GB")}.pdf`;
-  //     } else if (selectedOption === "yearly") {
-  //       return `income_history_${selectedYear}.pdf`;
-  //     } else {
+  //     doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //     doc.line(5, 21, 70, 21);
+  //     doc.setLineDash([]);
 
-  //       return `income_history_${new Date(
-  //         selectedYear,
-  //         selectedMonth - 1
-  //       ).toLocaleString("default", { month: "long" })}_${selectedYear}.pdf`;
-  //     }
-  //   })();
+  //     let startY = 24; // Adjust starting Y position
 
-  //   doc.save(fileName);
+  //     // Table headers
+  //     doc.setFontSize(7);
+  //     doc.text("No", 5, startY); // Index Number Header
+  //     doc.text("Item", 15, startY);
+  //     doc.text("Qty", 35, startY);
+  //     doc.text("Price",50,startY);
+  //     doc.text("Total", 62, startY);
+  //     doc.line(5, startY + 3, 70, startY + 3); // Header line
+
+  //     // Add items to the receipt
+  //     order.orderDetails.forEach((detail, index) => {
+  //       const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
+  //       doc.text((index + 1).toString(), 5, yOffset); // Index number
+  //       doc.text(detail.item, 15, yOffset);
+  //       doc.text(detail.quantity.toString(), 35, yOffset);
+  //       doc.text("80", 50, yOffset);
+  //       doc.text(`${detail.total.toFixed(2)}`, 62, yOffset);
+  //     });
+
+  //     // Add a separator line after the items
+  //     const itemsEndY =
+  //       startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
+  //     doc.line(5, itemsEndY + 5, 70, itemsEndY + 5);
+
+  //     // Calculate total position
+  //     const totalY = itemsEndY + 10;
+  //     doc.setFont("bold");
+  //     doc.text("Total:", 50, totalY);
+  //     doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
+
+  //     // Add Footer
+  //     const footerY = totalY + 10;
+  //     doc.setFont("normal");
+  //     doc.text("Thank you for your business!", 28, footerY);
+  //     doc.text("Visit us again!", 33, footerY + 5);
+
+  //     // Use output method to create Blob and open print dialog
+  //     const pdfOutput = doc.output('blob');
+  //     const pdfUrl = URL.createObjectURL(pdfOutput);
+
+  //     // Open the PDF in a new window for printing
+  //     const printWindow = window.open(pdfUrl);
+  //     printWindow.onload = () => {
+  //         printWindow.print();
+  //         printWindow.onafterprint = () => {
+  //             printWindow.close();
+  //             URL.revokeObjectURL(pdfUrl); // Clean up the URL
+  //         };
+  //     };
   // };
 
   const generatePDF = (order) => {
@@ -226,30 +391,34 @@ const OrderBody = ({ addIncomeModal }) => {
 
     doc.setTextColor(0, 0, 0);
 
+
     // Shop Information
     doc.setFontSize(8);
-    doc.text("Receipt", 35, 4);
-    doc.line(34.9, 5, 44.9, 5);
-    doc.text("Kinsuki Cafe, Near Vayaloram, Kottakkal", 15, 8);
-    doc.text("Phone: +91 98765 43210", 25, 12);
+    doc.text("Receipt", 35, 5); // Adjusted Y position for receipt title
+    doc.line(34.9, 6, 44.9, 6);
+    doc.addImage(logo, "PNG", 2, 29, 20, 15); // Position and size of the logo
+    doc.text("Kinsuki Cafe, Near Vayaloram", 20, 9);
+    doc.text("Kottakkal", 40, 13);
+    doc.text("Phone: +91 98765 43210", 35, 17);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 14, 70, 14);
+    doc.line(5, 36, 70, 36);
     doc.setLineDash([]); // Reset to solid lines
     doc.setFontSize(7);
-    doc.text(`${order.date}`, 25, 18);
-    doc.text(`11:13:06 AM`, 40, 18);
+    doc.text(`${order.date}`, 25, 40);
+    doc.text(`11:13:06 AM`, 40, 40);
 
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 21, 70, 21);
+    doc.line(5, 43, 70, 43);
     doc.setLineDash([]);
 
-    let startY = 24; // Adjust starting Y position
+    let startY = 46; // Adjust starting Y position
 
     // Table headers
     doc.setFontSize(7);
     doc.text("No", 5, startY); // Index Number Header
     doc.text("Item", 15, startY);
-    doc.text("Qty", 50, startY);
+    doc.text("Qty", 35, startY);
+    doc.text("Price", 50, startY);
     doc.text("Total", 62, startY);
     doc.line(5, startY + 3, 70, startY + 3); // Header line
 
@@ -258,7 +427,8 @@ const OrderBody = ({ addIncomeModal }) => {
       const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
       doc.text((index + 1).toString(), 5, yOffset); // Index number
       doc.text(detail.item, 15, yOffset);
-      doc.text(detail.quantity.toString(), 50, yOffset);
+      doc.text(detail.quantity.toString(), 35, yOffset);
+      doc.text("80", 50, yOffset);
       doc.text(`${detail.total.toFixed(2)}`, 62, yOffset);
     });
 
@@ -279,8 +449,19 @@ const OrderBody = ({ addIncomeModal }) => {
     doc.text("Thank you for your business!", 28, footerY);
     doc.text("Visit us again!", 33, footerY + 5);
 
-    // Save the PDF with a unique name
-    doc.save(`receipt_${order.orderID}.pdf`);
+    // Use output method to create Blob and open print dialog
+    const pdfOutput = doc.output("blob");
+    const pdfUrl = URL.createObjectURL(pdfOutput);
+
+    // Open the PDF in a new window for printing
+    const printWindow = window.open(pdfUrl);
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.onafterprint = () => {
+        printWindow.close();
+        URL.revokeObjectURL(pdfUrl); // Clean up the URL
+      };
+    };
   };
 
   return (
@@ -409,16 +590,14 @@ const OrderBody = ({ addIncomeModal }) => {
           onClose={() => setViewIncomeModal(false)}
           entry={singleEntry}
         />
-      )}
+      )} */}
       {isModalOpen && (
         <PDFDownloadModal
-          generatePDF={generatePDF}
+          generatePDF={generateTotalPDF}
           setIsModalOpen={setIsModalOpen}
         />
       )}
-      {addOrderModal && (
-        <AddOrder setAddOrderModal={setAddOrderModal}/>
-      )} */}
+      {addOrderModal && <AddOrder setAddOrderModal={setAddOrderModal} />}
     </div>
   );
 };
