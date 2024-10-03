@@ -3,7 +3,15 @@ import swal from "sweetalert";
 import api from "../../services/api";
 
 const AddExpense = ({ setAddExpenseModal }) => {
-  const [date, setDate] = useState("");
+
+
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`; // For input
+  };
+  const [date, setDate] = useState(formatDate(new Date()));
   const [expenseDetail, setExpenseDetail] = useState("");
   const [totalExpense, setTotalExpense] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -70,7 +78,7 @@ const AddExpense = ({ setAddExpenseModal }) => {
               value={date}
               onChange={(e) => setDate(e.target.value)}
               className="border border-gray-400 rounded-md p-2 w-full bg-gray-700 text-white"
-              max={new Date().toISOString().split("T")[0]} // Set max date to today
+              max={date} // Set max date to today
               required
             />
           </div>
