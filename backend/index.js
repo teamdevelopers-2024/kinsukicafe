@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import 'dotenv/config';
-import router from "../Router.js"; // Adjust this path based on your structure
+import router from "./router.js"; // Adjust this path based on your structure
 import connectDB from "../database/connection.js";
 
 const app = express();
@@ -32,6 +32,7 @@ app.get('/', (req, res) => {
 
 // API routes
 app.use('/api', router);
+
 
 // Export the app as the default export
 export default app;
