@@ -27,7 +27,7 @@ const currentDate = new Date();
 const currentMonth = currentDate.getMonth(); // 0-11
 const currentYear = currentDate.getFullYear();
 
-function ExpenseChart({ expenseHistoryData, setPdfModalOpen, isLoading }) {
+function ExpenseChart({ expenseHistoryData, setPdfModalOpen, isLoading, setAddExpenseModal }) {
   const [timePeriod, setTimePeriod] = useState("Monthly");
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [totalExpense, setTotalExpense] = useState("");
@@ -238,7 +238,14 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen, isLoading }) {
               )}
             </div>
             <div className="w-[15%]"></div>
+            <div className="flex justify-end">
+              <button onClick={() => setAddExpenseModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2">
+                Add Order +
+              </button>
+            </div>
           </div>
+
+
 
           {/* Chart with Navigation */}
           <div className="flex items-center justify-between w-full">
@@ -277,9 +284,6 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen, isLoading }) {
                   },
                   scales: {
                     x: {
-                      grid: {
-                        display: false, // Disable x-axis grid lines
-                      },
                       ticks: {
                         font: {
                           size: 10,
@@ -288,9 +292,9 @@ function ExpenseChart({ expenseHistoryData, setPdfModalOpen, isLoading }) {
                       },
                     },
                     y: {
-                      display: false, // Hide the entire y-axis including labels
+                      display: true, // Hide the entire y-axis including labels
                       grid: {
-                        display: false, // Disable y-axis grid lines
+                        display: true,
                       },
                     },
                   },

@@ -5,8 +5,9 @@ import ExpenseChart from "../Expense Chart/ExpenseChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import jsPDF from "jspdf";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
+import AddExpense from "../Add Expense/AddExpense";
 
-const Expense = ({ addExpenseModal }) => {
+const Expense = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expenseHistoryData, setExpenseHistoryData] = useState([]);
   const [selectedExpense, setSelectedExpense] = useState(null);
@@ -16,6 +17,7 @@ const Expense = ({ addExpenseModal }) => {
   const [customEndDate, setCustomEndDate] = useState(null);
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
+  const [addExpenseModal , setAddExpenseModal] = useState(false)
   const entriesPerPage = 5;
 
   useEffect(() => {
@@ -23,7 +25,9 @@ const Expense = ({ addExpenseModal }) => {
       try {
         setLoading(true); // Start loading
         const response = await api.showExpense();
-        setExpenseHistoryData([]); // Add logic to set the response data
+        if(!response.error){
+          setExpenseHistoryData(response.data); 
+        }
       } catch (error) {
         console.error("Error fetching expense history data", error);
       } finally {
@@ -93,13 +97,18 @@ const Expense = ({ addExpenseModal }) => {
 
   // Filter entries based on search query
   const filteredEntries = expenseHistoryData
-    .filter(
-      (entry) =>
-        entry.payeeName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (entry.contactNumber &&
-          entry.contactNumber.toString().includes(searchQuery))
-    )
-    .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort latest first
+  .filter((entry) => {
+    // Convert search query to lowercase
+    const lowerCaseQuery = searchQuery.toLowerCase();
+
+    // Check if the entry matches the search query for date, expense type, or total expense
+    return (
+      new Date(entry.date).toLocaleDateString("en-GB").includes(lowerCaseQuery) ||
+      entry.expenseType.toLowerCase().includes(lowerCaseQuery) ||
+      entry.totalExpense.toString().includes(lowerCaseQuery)
+    );
+  })
+  .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date (latest first)
 
   // Calculate entries to display
   const indexOfLastEntry = currentPage * entriesPerPage;
@@ -117,6 +126,7 @@ const Expense = ({ addExpenseModal }) => {
         <ExpenseChart
           expenseHistoryData={expenseHistoryData}
           isLoading={loading}
+          setAddExpenseModal={setAddExpenseModal}
           setPdfModalOpen={setPdfModalOpen}
         />
 
@@ -211,6 +221,9 @@ const Expense = ({ addExpenseModal }) => {
             </div>
           )}
         </div>
+
+
+        {addExpenseModal && <AddExpense setAddExpenseModal={setAddExpenseModal}/> }
 
         {/* Modal for Viewing Expense */}
         <ExpenseModal
