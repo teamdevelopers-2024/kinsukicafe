@@ -1,5 +1,6 @@
 import CategoryDb from "./model/CategoryDb.js"
 import itemDb from "./model/ItemsDb.js"
+import orderDb from "./model/OrderDb.js"
 
 
 
@@ -99,11 +100,53 @@ async function getItems(req,res) {
     }
 }
 
+async function addOrder(req,res) {
+    try {
+        const data = req.body
+        console.log(req.body)
+        await orderDb.create({
+            Date:data.date,
+            totalAmount:data.totalAmount,
+            orderDetails:data.orderDetails
+        })
+        res.status(200).json({
+            error:false,
+            message:"Order Added Successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
+
+
+async function getOrders(req,res) {
+    try {
+        const data = await orderDb.find().sort({_id:-1})
+        res.status(200).json({
+            error:false,
+            data:data
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
 
 
 export default {
     getCategory,
     addCategory,
     addItem,
-    getItems
+    getItems,
+    addOrder,
+    getOrders
 }

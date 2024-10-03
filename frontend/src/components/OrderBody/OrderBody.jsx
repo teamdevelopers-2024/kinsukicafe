@@ -23,12 +23,12 @@ const OrderBody = ({ addIncomeModal }) => {
     const fetchIncomeHistory = async () => {
       setIsLoading(true); // Set loading to true
       try {
-        const response = await api.showIncome();
-        const sortedData = response.data.sort(
-          (a, b) => new Date(b.workDate) - new Date(a.workDate)
-        );
-        setIncomeHistoryData([]);
-        console.log(sortedData); // Log sorted data
+        const response = await api.getOrders();
+        if(!response.error){
+          setIncomeHistoryData(response.data);
+        }else{
+          swal("!error" , "error fetching data", "error")
+        }
       } catch (error) {
         console.error("Error fetching income history data", error);
       } finally {
@@ -219,6 +219,7 @@ const OrderBody = ({ addIncomeModal }) => {
             <thead>
               <tr className="text-gray-500">
                 <th className="pb-2" >Date</th>
+                <th className="pb-2" >Refference</th>
                 <th className="pb-2">Total Amount</th>
                 <th className="pb-2">Action</th>
               </tr>
@@ -234,13 +235,10 @@ const OrderBody = ({ addIncomeModal }) => {
                 paginatedEntries.map((entry) => (
                   <tr key={entry.id} className="border-b border-gray-700">
                     <td className="py-2">
-                      {new Date(entry.workDate).toLocaleDateString("en-GB")}
+                      {new Date(entry.Date).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="py-2">{entry.customerName}</td>
-                    <td className="py-2">{entry.vehicleNumber}</td>
-                    <td className="py-2">{entry.paymentMethod}</td>
-                    <td className="py-2">{entry.contactNumber}</td>
-                    <td className="py-2">₹ {entry.totalServiceCost}</td>
+                    <td className="py-2">{entry.referenceNumber}</td>
+                    <td className="py-2">{entry.totalAmount}</td>
                     <td className="py-2">
                       <button
                         onClick={() => handleViewClick(entry)}
