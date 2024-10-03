@@ -6,6 +6,7 @@ import ViewIncomeModal from "../View Income/ViewIncomeModal";
 import IncomeChart from "../Income Chart/IncomeChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
+import AddOrder from "../Add Order/AddOrder";
 
 const OrderBody = ({ addIncomeModal }) => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
@@ -15,6 +16,7 @@ const OrderBody = ({ addIncomeModal }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [addOrderModal , setAddOrderModal] = useState(false)
   const entriesPerPage = 5;
 
   useEffect(() => {
@@ -33,10 +35,10 @@ const OrderBody = ({ addIncomeModal }) => {
         setIsLoading(false); // Set loading to false
       }
     };
-    if (!addIncomeModal) {
+    if (!addOrderModal) {
       fetchIncomeHistory();
     }
-  }, [addIncomeModal]);
+  }, [addOrderModal]);
 
   const filteredEntries = () => {
     const today = new Date();
@@ -73,7 +75,7 @@ const OrderBody = ({ addIncomeModal }) => {
     selectedOption,
     selectedMonth,
     selectedYear
-) => {
+  ) => {
     const doc = new jsPDF();
     doc.setFontSize(12);
 
@@ -83,28 +85,28 @@ const OrderBody = ({ addIncomeModal }) => {
     // Dynamic title based on selected options
     let title;
     if (selectedOption === "monthly") {
-        title = `Income History for ${new Date(
-            selectedYear,
-            selectedMonth - 1
-        ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
+      title = `Income History for ${new Date(
+        selectedYear,
+        selectedMonth - 1
+      ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
     } else if (selectedOption === "yearly") {
-        title = `Income History for ${selectedYear}`;
+      title = `Income History for ${selectedYear}`;
     } else {
-        title = `Income History from ${startDate.toLocaleDateString("en-IN")} to ${endDate.toLocaleDateString("en-IN")}`;
+      title = `Income History from ${startDate.toLocaleDateString("en-IN")} to ${endDate.toLocaleDateString("en-IN")}`;
     }
 
     const headers = [
-        "Date",
-        "Name",
-        "Vehicle Number",
-        "Phone Number",
-        "UPI",
-        "Cash",
+      "Date",
+      "Name",
+      "Vehicle Number",
+      "Phone Number",
+      "UPI",
+      "Cash",
     ];
 
     const filteredData = incomeHistoryData.filter((entry) => {
-        const entryDate = new Date(entry.workDate);
-        return entryDate >= startDate && entryDate <= endDate;
+      const entryDate = new Date(entry.workDate);
+      return entryDate >= startDate && entryDate <= endDate;
     });
 
     // Set column widths
@@ -112,14 +114,14 @@ const OrderBody = ({ addIncomeModal }) => {
 
     // Add title
     if (typeof title === "string") {
-        doc.text(title, 75, 10);
+      doc.text(title, 75, 10);
     }
 
     headers.forEach((header, index) => {
-        const xPosition = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-        if (typeof header === "string") {
-            doc.text(header, xPosition, 25);
-        }
+      const xPosition = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+      if (typeof header === "string") {
+        doc.text(header, xPosition, 25);
+      }
     });
 
     // Add a separator line
@@ -129,32 +131,32 @@ const OrderBody = ({ addIncomeModal }) => {
     let totalCash = 0;
 
     filteredData.forEach((entry, index) => {
-        const entryDate = new Date(entry.workDate).toLocaleDateString("en-GB");
-        const upiAmount = (entry.paymentMethod === "UPI" || entry.paymentMethod === 'Repaid-UPI') ? entry.totalServiceCost.toFixed(2) : "";
-        const cashAmount = (entry.paymentMethod === "Cash" || entry.paymentMethod === 'Repaid-Cash') ? entry.totalServiceCost.toFixed(2) : "";
+      const entryDate = new Date(entry.workDate).toLocaleDateString("en-GB");
+      const upiAmount = (entry.paymentMethod === "UPI" || entry.paymentMethod === 'Repaid-UPI') ? entry.totalServiceCost.toFixed(2) : "";
+      const cashAmount = (entry.paymentMethod === "Cash" || entry.paymentMethod === 'Repaid-Cash') ? entry.totalServiceCost.toFixed(2) : "";
 
-        const row = [
-            entryDate,
-            entry.customerName,
-            entry.vehicleNumber,
-            entry.contactNumber ? entry.contactNumber.toString() : "",
-            upiAmount,
-            cashAmount,
-        ];
+      const row = [
+        entryDate,
+        entry.customerName,
+        entry.vehicleNumber,
+        entry.contactNumber ? entry.contactNumber.toString() : "",
+        upiAmount,
+        cashAmount,
+      ];
 
-        // Accumulate totals based on payment method
-        if (entry.paymentMethod === "UPI") {
-            totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
-        } else if (entry.paymentMethod === "Cash") {
-            totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
+      // Accumulate totals based on payment method
+      if (entry.paymentMethod === "UPI") {
+        totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
+      } else if (entry.paymentMethod === "Cash") {
+        totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
+      }
+
+      row.forEach((cell, cellIndex) => {
+        const xPosition = 10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
+        if (typeof cell === "string") {
+          doc.text(cell, xPosition, 35 + index * 10);
         }
-
-        row.forEach((cell, cellIndex) => {
-            const xPosition = 10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
-            if (typeof cell === "string") {
-                doc.text(cell, xPosition, 35 + index * 10);
-            }
-        });
+      });
     });
 
     // Add total calculations at the end
@@ -170,31 +172,34 @@ const OrderBody = ({ addIncomeModal }) => {
     doc.text(`Total Income (Overall): ${totalIncome.toFixed(2)}`, 130, totalRowYPosition + 30);
 
     const fileName = (() => {
-        if (selectedOption === "custom") {
-            return `income_history_${startDate.toLocaleDateString("en-GB")}_to_${endDate.toLocaleDateString("en-GB")}.pdf`;
-        } else if (selectedOption === "yearly") {
-            return `income_history_${selectedYear}.pdf`;
-        } else {
-            // monthly
-            return `income_history_${new Date(
-                selectedYear,
-                selectedMonth - 1
-            ).toLocaleString("default", { month: "long" })}_${selectedYear}.pdf`;
-        }
+      if (selectedOption === "custom") {
+        return `income_history_${startDate.toLocaleDateString("en-GB")}_to_${endDate.toLocaleDateString("en-GB")}.pdf`;
+      } else if (selectedOption === "yearly") {
+        return `income_history_${selectedYear}.pdf`;
+      } else {
+        // monthly
+        return `income_history_${new Date(
+          selectedYear,
+          selectedMonth - 1
+        ).toLocaleString("default", { month: "long" })}_${selectedYear}.pdf`;
+      }
     })();
 
     doc.save(fileName);
-};
+  };
 
 
 
   return (
     <div className="min-h-screen bg-[#23346c] p-10 text-gray-100 relative">
+
+
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
           isLoading={isLoading}
           setIsModalOpen={setIsModalOpen}
+          setAddOrderModal={setAddOrderModal}
         />
 
         {/* Income History Table */}
@@ -297,6 +302,9 @@ const OrderBody = ({ addIncomeModal }) => {
           generatePDF={generatePDF}
           setIsModalOpen={setIsModalOpen}
         />
+      )}
+      {addOrderModal && (
+        <AddOrder setAddOrderModal={setAddOrderModal}/>
       )}
     </div>
   );

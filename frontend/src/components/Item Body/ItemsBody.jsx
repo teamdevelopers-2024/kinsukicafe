@@ -28,7 +28,7 @@ const ItemsBody = () => {
       }
     };
     fetchItems();
-  }, []); // Dependencies
+  }, [showAddItem]); // Dependencies
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 

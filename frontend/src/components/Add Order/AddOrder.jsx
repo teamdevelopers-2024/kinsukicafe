@@ -4,99 +4,71 @@ import swal from 'sweetalert';
 import LoadingSpinner from "../spinner/Spinner";
 
 const AddOrder = ({ setAddOrderModal }) => {
-  // State to handle the dynamic fields
-  const [workDescriptions, setWorkDescriptions] = useState([
-    { description: "", amount: "", reference: "" },
-  ]);
+  // State to handle the dynamic fields for orderDetails
+  const [orderDetails, setOrderDetails] = useState([{ item: "", quantity: "", total: "" }]);
 
   // State for other fields
-  const [customerName, setCustomerName] = useState("");
-  const [vehicleNumber, setVehicleNumber] = useState("");
-  const [contactNumber, setContactNumber] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]); // Format to YYYY-MM-DD
   const [loading, setLoading] = useState(false);
 
-  const today = new Date();
-  const options = { timeZone: "Asia/Kolkata" };
-  const todayString = today.toLocaleDateString("en-CA", options); // Format to YYYY-MM-DD
-  const [workDate, setWorkDate] = useState(todayString);
-
   // Error state for validation messages
-  const [errors, setErrors] = useState({ workDescriptionsErrors: [] });
+  const [errors, setErrors] = useState({ orderDetailsErrors: [] });
 
   // Function to handle input change for dynamic fields
   const handleInputChange = (index, event) => {
     const { name, value } = event.target;
-    const updatedFields = [...workDescriptions];
+    const updatedFields = [...orderDetails];
     updatedFields[index][name] = value;
-    setWorkDescriptions(updatedFields);
+    setOrderDetails(updatedFields);
   };
 
-  // Function to add a new work description field
+  // Function to add a new orderDetails field
   const addField = () => {
-    setWorkDescriptions([...workDescriptions, { description: "", amount: "", reference: "" }]);
-    setErrors({ ...errors, workDescriptionsErrors: [...errors.workDescriptionsErrors, {}] });
+    setOrderDetails([...orderDetails, { item: "", quantity: "", total: "" }]);
+    setErrors({ ...errors, orderDetailsErrors: [...errors.orderDetailsErrors, {}] });
   };
 
   // Function to remove a field
   const removeField = (index) => {
-    const updatedFields = workDescriptions.filter((_, i) => i !== index);
-    const updatedErrors = errors.workDescriptionsErrors.filter((_, i) => i !== index);
-    setWorkDescriptions(updatedFields);
-    setErrors({ ...errors, workDescriptionsErrors: updatedErrors });
+    const updatedFields = orderDetails.filter((_, i) => i !== index);
+    const updatedErrors = errors.orderDetailsErrors.filter((_, i) => i !== index);
+    setOrderDetails(updatedFields);
+    setErrors({ ...errors, orderDetailsErrors: updatedErrors });
   };
 
   // Function to calculate the total amount
   const calculateTotal = () => {
-    return workDescriptions.reduce((total, work) => {
-      const amount = parseFloat(work.amount) || 0;
-      return total + amount;
+    return orderDetails.reduce((total, detail) => {
+      const itemTotal = parseFloat(detail.total) || 0;
+      return total + itemTotal;
     }, 0);
   };
 
   // Function to handle form validation
   const validate = () => {
     let tempErrors = {
-      workDate: "",
-      customerName: "",
-      vehicleNumber: "",
-      contactNumber: "",
-      paymentMethod: "",
-      workDescriptionsErrors: [...workDescriptions.map(() => ({ description: "", amount: "" }))]
+      date: "",
+      orderDetailsErrors: [...orderDetails.map(() => ({ item: "", quantity: "", total: "" }))]
     };
 
     let isValid = true;
 
-    // Validate general fields
-    if (!workDate) {
-      tempErrors.workDate = "Work date is required.";
-      isValid = false;
-    }
-    if (!customerName) {
-      tempErrors.customerName = "Customer name is required.";
-      isValid = false;
-    }
-    if (!vehicleNumber) {
-      tempErrors.vehicleNumber = "Vehicle number is required.";
-      isValid = false;
-    }
-    if (!contactNumber) {
-      tempErrors.contactNumber = "Contact number is required.";
-      isValid = false;
-    }
-    if (!paymentMethod) {
-      tempErrors.paymentMethod = "Select a payment method.";
+    if (!date) {
+      tempErrors.date = "Date is required.";
       isValid = false;
     }
 
-    // Validate workDescriptions for each entry
-    workDescriptions.forEach((work, index) => {
-      if (!work.description) {
-        tempErrors.workDescriptionsErrors[index].description = "Description is required.";
+    orderDetails.forEach((detail, index) => {
+      if (!detail.item) {
+        tempErrors.orderDetailsErrors[index].item = "Item is required.";
         isValid = false;
       }
-      if (!work.amount) {
-        tempErrors.workDescriptionsErrors[index].amount = "Amount is required.";
+      if (!detail.quantity) {
+        tempErrors.orderDetailsErrors[index].quantity = "Quantity is required.";
+        isValid = false;
+      }
+      if (!detail.total) {
+        tempErrors.orderDetailsErrors[index].total = "Total is required.";
         isValid = false;
       }
     });
@@ -110,25 +82,21 @@ const AddOrder = ({ setAddOrderModal }) => {
     if (!validate()) return;
     setLoading(true);
     const formData = {
-      workDate,
-      customerName,
-      vehicleNumber: vehicleNumber.toUpperCase(),
-      contactNumber,
-      paymentMethod,
-      totalServiceCost: calculateTotal(),
-      workDescriptions,
+      date,
+      totalAmount: calculateTotal(),
+      orderDetails,
     };
     try {
-      const result = await api.addIncome(formData);
+      const result = await api.addOrder(formData);
       if (result.error) {
         swal("Error!", result.errors[0], "error");
         return;
       }
-      swal("Success!", "Income added successfully!", "success");
+      swal("Success!", "Order added successfully!", "success");
       setAddOrderModal(false); // Close the modal after saving
     } catch (err) {
       console.error(err);
-      swal("Error!", "Failed to add income.", "error");
+      swal("Error!", "Failed to add order.", "error");
     } finally {
       setLoading(false);
     }
@@ -143,124 +111,75 @@ const AddOrder = ({ setAddOrderModal }) => {
       {/* Popup Form */}
       <div className="fixed inset-0 flex items-center justify-center z-30">
         <div className="bg-gray-800 text-white rounded-lg shadow-lg p-6 w-full max-w-4xl mx-auto">
-          <h2 className="text-xl mb-4">Income Entry</h2>
+          <h2 className="text-xl mb-4">Order Entry</h2>
 
-          {/* Form inputs */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <label className="block">
-              <span className="text-white">Work Date</span>
-              <input
-                type="date"
-                className="p-2 bg-gray-700 rounded w-full"
-                value={workDate}
-                onChange={(e) => setWorkDate(e.target.value)}
-              />
-              {errors.workDate && <p className="text-red-500">{errors.workDate}</p>}
-            </label>
+          {/* Date Input */}
+          <label className="block mb-4">
+            <span className="text-white">Order Date</span>
+            <input
+              type="date"
+              className="p-2 bg-gray-700 rounded w-full"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+            {errors.date && <p className="text-red-500">{errors.date}</p>}
+          </label>
 
-            <label className="block">
-              <span className="text-white">Customer Name</span>
-              <input
-                type="text"
-                placeholder="Who is the customer?"
-                className="p-2 bg-gray-700 rounded w-full"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-              />
-              {errors.customerName && <p className="text-red-500">{errors.customerName}</p>}
-            </label>
-
-            <label className="block">
-              <span className="text-white">Vehicle Number</span>
-              <input
-                type="text"
-                placeholder="Plate ID for this vehicle?"
-                className="p-2 bg-gray-700 rounded w-full"
-                value={vehicleNumber.toUpperCase()}
-                onChange={(e) => setVehicleNumber(e.target.value)}
-              />
-              {errors.vehicleNumber && <p className="text-red-500">{errors.vehicleNumber}</p>}
-            </label>
-
-            <label className="block">
-              <span className="text-white">Contact Number</span>
-              <input
-                type="tel"
-                placeholder="Preferred contact for updates?"
-                className="p-2 bg-gray-700 rounded w-full"
-                value={contactNumber}
-                onChange={(e) => setContactNumber(e.target.value)}
-              />
-              {errors.contactNumber && <p className="text-red-500">{errors.contactNumber}</p>}
-            </label>
-
-            <label className="block">
-              <span className="text-white">Payment Method</span>
-              <select
-                className="p-2 bg-gray-700 rounded w-full"
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
-              >
-                <option value="">How did you pay?</option>
-                <option value="Cash">Cash</option>
-                <option value="UPI">UPI</option>
-              </select>
-              {errors.paymentMethod && <p className="text-red-500">{errors.paymentMethod}</p>}
-            </label>
-          </div>
-
-          {/* Work Description Table */}
+          {/* Order Details Table */}
           <table className="w-full mb-4">
             <thead>
               <tr>
                 <th>#</th>
-                <th>Work Description</th>
-                <th>Amount</th>
-                <th>Reference</th>
-                {workDescriptions.length > 1 && <th>Action</th>}
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                {orderDetails.length > 1 && <th>Action</th>}
               </tr>
             </thead>
             <tbody>
-              {workDescriptions.map((work, index) => (
+              {orderDetails.map((detail, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
                   <td>
                     <input
                       type="text"
-                      name="description"
-                      value={work.description}
+                      name="item"
+                      value={detail.item}
                       onChange={(event) => handleInputChange(index, event)}
                       className="p-2 bg-gray-700 rounded w-full"
-                      placeholder="Name of the work"
+                      placeholder="Item description"
                     />
-                    {errors.workDescriptionsErrors[index]?.description && (
-                      <p className="text-red-500">{errors.workDescriptionsErrors[index].description}</p>
+                    {errors.orderDetailsErrors[index]?.item && (
+                      <p className="text-red-500">{errors.orderDetailsErrors[index].item}</p>
                     )}
                   </td>
                   <td>
                     <input
                       type="number"
-                      name="amount"
-                      value={work.amount}
+                      name="quantity"
+                      value={detail.quantity}
                       onChange={(event) => handleInputChange(index, event)}
                       className="p-2 bg-gray-700 rounded w-full"
-                      placeholder="Amount of work"
+                      placeholder="Quantity"
                     />
-                    {errors.workDescriptionsErrors[index]?.amount && (
-                      <p className="text-red-500">{errors.workDescriptionsErrors[index].amount}</p>
+                    {errors.orderDetailsErrors[index]?.quantity && (
+                      <p className="text-red-500">{errors.orderDetailsErrors[index].quantity}</p>
                     )}
                   </td>
                   <td>
                     <input
-                      type="text"
-                      name="reference"
-                      value={work.reference}
+                      type="number"
+                      name="total"
+                      value={detail.total}
                       onChange={(event) => handleInputChange(index, event)}
                       className="p-2 bg-gray-700 rounded w-full"
-                      placeholder="Extra ref (optional)"
+                      placeholder="Total amount"
                     />
+                    {errors.orderDetailsErrors[index]?.total && (
+                      <p className="text-red-500">{errors.orderDetailsErrors[index].total}</p>
+                    )}
                   </td>
-                  {workDescriptions.length > 1 && (
+                  {orderDetails.length > 1 && (
                     <td>
                       <button
                         onClick={() => removeField(index)}
@@ -281,7 +200,7 @@ const AddOrder = ({ setAddOrderModal }) => {
           {/* Action buttons */}
           <div className="flex justify-between">
             <button onClick={addField} className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">
-              Add Work
+              Add Item
             </button>
             <div>
               <button

@@ -24,7 +24,7 @@ ChartJS.register(
   Legend
 );
 
-function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
+function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrderModal }) {
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth(); // 0-11
   const Year = currentDate.getFullYear();
@@ -39,7 +39,7 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
       const serviceCost = entry.totalServiceCost;
       return accumulator + serviceCost;
     }, 0);
-      setTotalIncome(total);
+    setTotalIncome(total);
 
 
     // Calculate period income based on selected time period
@@ -195,24 +195,29 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen , isLoading}) {
           <h3 className="text-3xl text-green-300 font-bold">
             {!isLoading ? new Intl.NumberFormat("en-IN", {
               style: "currency",
-            currency: "INR",
-            }).format(totalIncome) :<SpinnerOnly/>}
+              currency: "INR",
+            }).format(totalIncome) : <SpinnerOnly />}
           </h3>
           <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
           <h2 className="text-3xl font-bold text-[#ffeda5]">
             {timePeriod} income
           </h2>
           <h3 className="text-3xl text-green-300 font-bold">
-          {!isLoading ? new Intl.NumberFormat("en-IN", {
+            {!isLoading ? new Intl.NumberFormat("en-IN", {
               style: "currency",
-            currency: "INR",
-            }).format(periodIncome) :<SpinnerOnly/>}
+              currency: "INR",
+            }).format(periodIncome) : <SpinnerOnly />}
           </h3>
           {/* Download Button Here */}
           <IncomeDownloadButton setIsModalOpen={setIsModalOpen} />
         </div>
 
         <div className="w-2/4 relative">
+          <div className="flex justify-end">
+            <button onClick={()=> setAddOrderModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2">
+              Add Order +
+            </button>
+          </div>
           <div className="absolute z-10 bottom--4 left-0 p-2">
             <div className="bg-gray-700 px-1.5 py-1.5 rounded-full text-cyan-500">
               <select
