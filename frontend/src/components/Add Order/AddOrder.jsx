@@ -4,13 +4,21 @@ import swal from "sweetalert";
 import LoadingSpinner from "../spinner/Spinner";
 
 const AddOrder = ({ setAddOrderModal }) => {
+
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`; // For input
+  };
+
   const [orderDetails, setOrderDetails] = useState([]);
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [date, setDate] = useState(formatDate(new Date()));
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({ date: "", itemError: "" });
   const [inputName, setInputName] = useState("");

@@ -159,6 +159,17 @@ async function getOrders() {
   }
 }
 
+
+async function getHomeData() {
+  try {
+    const response = await api.get("/getHomeData")
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -172,5 +183,6 @@ export default {
   addItem,
   getItems,
   addOrder,
-  getOrders
+  getOrders,
+  getHomeData
 };
