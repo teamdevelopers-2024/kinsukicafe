@@ -372,6 +372,98 @@ const OrderBody = () => {
   //     };
   // };
 
+  // const generatePDF = (order) => {
+  //   const width = 75;
+  //   const itemHeight = 8; // Height for each item
+  //   const footerHeight = 25; // Space needed for footer
+  //   const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
+
+  //   const itemCount = order.orderDetails.length;
+  //   const totalHeight =
+  //     40 + Math.min(itemCount, maxVisibleItems) * itemHeight + footerHeight; // Dynamic height based on items
+
+  //   const doc = new jsPDF({
+  //     orientation: "portrait",
+  //     unit: "mm",
+  //     format: [width, totalHeight],
+  //     hotfixes: [],
+  //   });
+
+  //   doc.setTextColor(0, 0, 0);
+
+
+  //   // Shop Information
+  //   doc.setFontSize(8);
+  //   doc.text("Receipt", 33, 5); // Adjusted Y position for receipt title
+  //   doc.line(32.9, 6, 42.9, 6);
+  //   doc.addImage(logo, "PNG", 3, 5, 22, 13); // Position and size of the logo
+  //   doc.text("Kinsuki Cafe, Near Vayaloram", 28, 9);
+  //   doc.text("Kottakkal", 40, 13);
+  //   doc.text("Phone: +91 98765 43210", 29, 17);
+  //   doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //   doc.line(5, 19, 70, 19);
+  //   doc.setLineDash([]); // Reset to solid lines
+  //   doc.setFontSize(9);
+  //   doc.text(`${order.date}`, 20, 25);
+  //   doc.text(`11:13:06 AM`, 40, 25);
+  //   doc.setFontSize(7);
+  //   doc.setLineDash([1, 1], 0); // Dotted line pattern
+  //   doc.line(5, 28, 70, 28);
+  //   doc.setLineDash([]);
+
+  //   let startY = 32; // Adjust starting Y position
+
+  //   // Table headers
+  //   doc.setFontSize(7);
+  //   doc.text("No", 5, startY); // Index Number Header
+  //   doc.text("Item", 15, startY);
+  //   doc.text("Qty", 35, startY);
+  //   doc.text("Price", 50, startY);
+  //   doc.text("Total", 62, startY);
+  //   doc.line(5, startY + 3, 70, startY + 3); // Header line
+
+  //   // Add items to the receipt
+  //   order.orderDetails.forEach((detail, index) => {
+  //     const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
+  //     doc.text((index + 1).toString(), 5, yOffset); // Index number
+  //     doc.text(detail.item, 15, yOffset);
+  //     doc.text(detail.quantity.toString(), 35, yOffset);
+  //     doc.text("80", 50, yOffset);
+  //     doc.text(`${detail.total.toFixed(2)}`, 62, yOffset);
+  //   });
+
+  //   // Add a separator line after the items
+  //   const itemsEndY =
+  //     startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
+  //   doc.line(5, itemsEndY , 70, itemsEndY);
+
+  //   // Calculate total position
+  //   const totalY = itemsEndY + 5;
+  //   doc.setFont("bold");
+  //   doc.text("Total:", 50, totalY);
+  //   doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
+
+  //   // Add Footer
+  //   const footerY = totalY + 10;
+  //   doc.setFont("normal");
+  //   doc.text("Thank you for your business!", 23, footerY);
+  //   doc.text("Visit us again!", 29, footerY + 5);
+
+  //   // Use output method to create Blob and open print dialog
+  //   const pdfOutput = doc.output("blob");
+  //   const pdfUrl = URL.createObjectURL(pdfOutput);
+
+  //   // Open the PDF in a new window for printing
+  //   const printWindow = window.open(pdfUrl);
+  //   printWindow.onload = () => {
+  //     printWindow.print();
+  //     printWindow.onafterprint = () => {
+  //       printWindow.close();
+  //       URL.revokeObjectURL(pdfUrl); // Clean up the URL
+  //     };
+  //   };
+  // };
+
   const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
@@ -391,27 +483,35 @@ const OrderBody = () => {
 
     doc.setTextColor(0, 0, 0);
 
+    // Format the order date
+    const orderDate = new Date(order.Date);
+
+    const formattedOrderDate = `${String(orderDate.getDate()).padStart(2, '0')}/${String(orderDate.getMonth() + 1).padStart(2, '0')}/${orderDate.getFullYear()}`;
+
+    // Format the print time
+    const printDate = new Date();
+    const formattedPrintTime = `${String(printDate.getHours()).padStart(2, '0')}:${String(printDate.getMinutes()).padStart(2, '0')}:${String(printDate.getSeconds()).padStart(2, '0')} ${printDate.getHours() >= 12 ? 'PM' : 'AM'}`;
 
     // Shop Information
     doc.setFontSize(8);
-    doc.text("Receipt", 35, 5); // Adjusted Y position for receipt title
-    doc.line(34.9, 6, 44.9, 6);
-    doc.addImage(logo, "PNG", 2, 29, 20, 15); // Position and size of the logo
-    doc.text("Kinsuki Cafe, Near Vayaloram", 20, 9);
+    doc.text("Receipt", 33, 5); // Adjusted Y position for receipt title
+    doc.line(32.9, 6, 42.9, 6);
+    doc.addImage(logo, "PNG", 3, 5, 22, 13); // Position and size of the logo
+    doc.text("Kinsuki Cafe, Near Vayaloram", 28, 9);
     doc.text("Kottakkal", 40, 13);
-    doc.text("Phone: +91 98765 43210", 35, 17);
+    doc.text("Phone: +91 98765 43210", 29, 17);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 36, 70, 36);
+    doc.line(5, 19, 70, 19);
     doc.setLineDash([]); // Reset to solid lines
+    doc.setFontSize(9);
+    doc.text(formattedOrderDate, 20, 25);
+    doc.text(formattedPrintTime, 40, 25);
     doc.setFontSize(7);
-    doc.text(`${order.date}`, 25, 40);
-    doc.text(`11:13:06 AM`, 40, 40);
-
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 43, 70, 43);
+    doc.line(5, 32, 70, 32);
     doc.setLineDash([]);
 
-    let startY = 46; // Adjust starting Y position
+    let startY = 36; // Adjust starting Y position
 
     // Table headers
     doc.setFontSize(7);
@@ -435,10 +535,10 @@ const OrderBody = () => {
     // Add a separator line after the items
     const itemsEndY =
       startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
-    doc.line(5, itemsEndY + 5, 70, itemsEndY + 5);
+    doc.line(5, itemsEndY, 70, itemsEndY);
 
     // Calculate total position
-    const totalY = itemsEndY + 10;
+    const totalY = itemsEndY + 5;
     doc.setFont("bold");
     doc.text("Total:", 50, totalY);
     doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
@@ -446,8 +546,10 @@ const OrderBody = () => {
     // Add Footer
     const footerY = totalY + 10;
     doc.setFont("normal");
-    doc.text("Thank you for your business!", 28, footerY);
-    doc.text("Visit us again!", 33, footerY + 5);
+    doc.text("Thank you for your business!", 23, footerY);
+    doc.text("Visit us again!", 29, footerY + 5);
+
+    
 
     // Use output method to create Blob and open print dialog
     const pdfOutput = doc.output("blob");
@@ -462,7 +564,9 @@ const OrderBody = () => {
         URL.revokeObjectURL(pdfUrl); // Clean up the URL
       };
     };
-  };
+};
+
+
 
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
@@ -524,6 +628,7 @@ const OrderBody = () => {
                     </td>
                     <td className="py-2">
                       <button
+                      onClick={() => generatePDF(entry)}
                         className="text-[#ffeda5]"
                       >
                         Print
