@@ -24,7 +24,10 @@ ChartJS.register(
   Legend
 );
 
-function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading }) {
+
+function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrderModal }) {
+
+
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth(); // 0-11
   const Year = currentDate.getFullYear();
@@ -217,6 +220,11 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading }) {
 
   {/* Right Section */}
   <div className="w-full lg:w-2/4 flex flex-col justify-center items-center">
+    <div className="flex justify-end">
+            <button onClick={()=> setAddOrderModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2">
+              Add Order +
+            </button>
+          </div>
     {/* Time Period Selector */}
     <div className="flex justify-between mb-4 w-full">
       <div className="bg-gray-700 px-1 py-0.5 rounded-full text-cyan-500">

@@ -20,7 +20,7 @@ function CatogeryBody() {
         }
     }
     fetchData()
-  },[])
+  },[addCategory])
 
 
 

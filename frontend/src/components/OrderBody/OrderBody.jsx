@@ -6,6 +6,7 @@ import ViewIncomeModal from "../View Income/ViewIncomeModal";
 import IncomeChart from "../Income Chart/IncomeChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
+import AddOrder from "../Add Order/AddOrder";
 
 const OrderBody = ({ addIncomeModal }) => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
@@ -15,9 +16,30 @@ const OrderBody = ({ addIncomeModal }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [addOrderModal , setAddOrderModal] = useState(false)
   const entriesPerPage = 5;
 
-  // Filtering based on search query
+
+  useEffect(() => {
+    const fetchIncomeHistory = async () => {
+      setIsLoading(true); // Set loading to true
+      try {
+        const response = await api.showIncome();
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.workDate) - new Date(a.workDate)
+        );
+        setIncomeHistoryData([]);
+        console.log(sortedData); // Log sorted data
+      } catch (error) {
+        console.error("Error fetching income history data", error);
+      } finally {
+        setIsLoading(false); // Set loading to false
+      }
+    };
+    if (!addOrderModal) {
+      fetchIncomeHistory();
+    }
+  }, [addOrderModal]);
   const filteredEntries = () => {
     const today = new Date();
     let filteredData = incomeHistoryData;
@@ -122,10 +144,11 @@ const OrderBody = ({ addIncomeModal }) => {
         cashAmount,
       ];
 
+      // Accumulate totals based on payment method
       if (entry.paymentMethod === "UPI") {
-        totalUPI += entry.totalServiceCost || 0;
+        totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
       } else if (entry.paymentMethod === "Cash") {
-        totalCash += entry.totalServiceCost || 0;
+        totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
       }
 
       row.forEach((cell, cellIndex) => {
@@ -150,6 +173,7 @@ const OrderBody = ({ addIncomeModal }) => {
       } else if (selectedOption === "yearly") {
         return `income_history_${selectedYear}.pdf`;
       } else {
+
         return `income_history_${new Date(
           selectedYear,
           selectedMonth - 1
@@ -160,13 +184,16 @@ const OrderBody = ({ addIncomeModal }) => {
     doc.save(fileName);
   };
 
+
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
+
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
           isLoading={isLoading}
           setIsModalOpen={setIsModalOpen}
+          setAddOrderModal={setAddOrderModal}
         />
 
         {/* Income History Table */}
@@ -252,6 +279,9 @@ const OrderBody = ({ addIncomeModal }) => {
           generatePDF={generatePDF}
           setIsModalOpen={setIsModalOpen}
         />
+      )}
+      {addOrderModal && (
+        <AddOrder setAddOrderModal={setAddOrderModal}/>
       )}
     </div>
   );
