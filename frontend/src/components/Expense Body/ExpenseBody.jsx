@@ -23,7 +23,7 @@ const Expense = ({ addExpenseModal }) => {
       try {
         setLoading(true); // Start loading
         const response = await api.showExpense();
-        setExpenseHistoryData([]);
+        setExpenseHistoryData([]); // Add logic to set the response data
       } catch (error) {
         console.error("Error fetching expense history data", error);
       } finally {
@@ -31,7 +31,7 @@ const Expense = ({ addExpenseModal }) => {
       }
     };
 
-    if (addExpenseModal == false) {
+    if (addExpenseModal === false) {
       fetchExpenseHistory();
     }
   }, [addExpenseModal]);
@@ -111,18 +111,17 @@ const Expense = ({ addExpenseModal }) => {
   const pageCount = Math.ceil(filteredEntries.length / entriesPerPage);
 
   return (
-    <div className="min-h-screen bg-[#23346c] p-10 text-gray-100 relative">
+    <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
         {/* Total Expense Section */}
-
         <ExpenseChart
           expenseHistoryData={expenseHistoryData}
           isLoading={loading}
           setPdfModalOpen={setPdfModalOpen}
         />
 
-        <div className="bg-[#00144c] p-10 rounded-xl">
-          <div className="flex justify-between items-center mb-6">
+        <div className="bg-[#00144c] p-4 lg:p-10 rounded-xl">
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-6 space-y-4 lg:space-y-0">
             <h3 className="text-2xl font-bold text-[#ffeda5]">
               Expense History
             </h3>
@@ -131,7 +130,7 @@ const Expense = ({ addExpenseModal }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name or phone"
-              className="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg"
+              className="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg w-full lg:w-1/3"
             />
           </div>
           <table className="w-full text-left">
@@ -143,7 +142,8 @@ const Expense = ({ addExpenseModal }) => {
               </tr>
             </thead>
             <tbody>
-              {loading ? ( // Show loading indicator while fetching data
+              {/* Modify loading and data display */}
+              {loading ? (
                 <tr>
                   <td colSpan="7" className="py-4 text-center text-gray-500">
                     <SpinnerOnly />
@@ -161,10 +161,6 @@ const Expense = ({ addExpenseModal }) => {
                     <td className="py-4">
                       {new Date(entry.date).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="py-4">{entry.payeeName}</td>
-                    <td className="py-4">{entry.expenseType}</td>
-                    <td className="py-4">{entry.paymentMethod}</td>
-                    <td className="py-4">{entry.contactNumber}</td>
                     <td className="py-4">
                       {new Intl.NumberFormat("en-IN", {
                         style: "currency",
@@ -223,14 +219,14 @@ const Expense = ({ addExpenseModal }) => {
           onClose={() => setIsModalOpen(false)}
         />
       </main>
-      {pdfModalOpen && 
-      <PDFDownloadModal
-      setIsModalOpen={setPdfModalOpen}
-      customStartDate={customStartDate}
-      customEndDate={customEndDate}
-      generatePDF={generatePDF}
-      />
-    }
+      {pdfModalOpen && (
+        <PDFDownloadModal
+          setIsModalOpen={setPdfModalOpen}
+          customStartDate={customStartDate}
+          customEndDate={customEndDate}
+          generatePDF={generatePDF}
+        />
+      )}
     </div>
   );
 };
