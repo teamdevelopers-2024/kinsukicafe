@@ -3,66 +3,48 @@ import api from "../../services/api";
 import searchIcon from "../../assets/searchIcon.svg";
 // import addCustomerIcon from "../../assets/addCustomerIcon.svg";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
+import AddItem from "../Add items/AddItem";
 
 const ItemsBody = () => {
-  const [showAddItem, setshowAddItem] = useState(false);
+  const [showAddItem, setShowAddItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [customers, setCustomers] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1); 
-  const [isLoading, setIsLoading] = useState(false); 
+  const [items, setItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const customersPerPage = 10; // Number of customers per page
-
-  const handleMoreClick = (vehicleNumbers) => {
-    console.log("clicked");
-    setSelectedVehicleNumbers(vehicleNumbers);
-    setMoreModal(true);
-  };
+  const itemsPerPage = 10; // Number of items per page
 
   useEffect(() => {
-    // Check if all the modal states are false before fetching customers
-      const fetchCustomers = async () => {
-        try {
-          setIsLoading(true); // Set loading to true before fetching data
-          const response = await api.showCustomers();
-          setCustomers(response.data);
-          console.log("Customer history", response.data);
-        } catch (error) {
-          console.error("Error fetching income history data", error);
-        } finally {
-          setIsLoading(false); // Set loading to false after fetching data
-        }
-      fetchCustomers();
-    }
-  }, []); // Dependencies
+    const fetchItems = async () => {
+      try {
+        setIsLoading(true); // Set loading to true before fetching data
+        const response = await api.getItems();
+        setItems(response.data);
+        console.log("Fetched items", response.data);
+      } catch (error) {
+        console.error("Error fetching items", error);
+      } finally {
+        setIsLoading(false); // Set loading to false after fetching data
+      }
+    };
+    fetchItems();
+  }, [showAddItem]); // Dependencies
 
-  const calculateDueAmount = (creditAmount, paidAmount) => {
-    return creditAmount - paidAmount;
-  };
+  const totalPages = Math.ceil(items.length / itemsPerPage);
 
-  const handleCreditClick = (customer) => {
-    setSelectedCustomer(customer);
-    setShowCreditForm(true);
-  };
-
-
-  const totalPages = Math.ceil(customers.length / customersPerPage);
-
-  const filteredCustomers = customers.filter((customer) => {
-    const customerName = customer.customerName.toLowerCase();
-    const phoneNumber = customer.phoneNumber
-      ? String(customer.phoneNumber)
-      : "";
+  const filteredItems = items.filter((item) => {
+    const itemName = item.name.toLowerCase();
+    const category = item.category ? item.category.toLowerCase() : "";
 
     return (
-      customerName.includes(searchTerm.toLowerCase()) ||
-      phoneNumber.includes(searchTerm)
+      itemName.includes(searchTerm.toLowerCase()) ||
+      category.includes(searchTerm.toLowerCase())
     );
   });
 
-  const paginatedCustomers = filteredCustomers.slice(
-    (currentPage - 1) * customersPerPage,
-    currentPage * customersPerPage
+  const paginatedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   return (
@@ -87,7 +69,7 @@ const ItemsBody = () => {
 
               <button
                 className="flex flex-row bg-[#00A1B7] text-white font-semibold gap-1 px-4 py-2 rounded-md"
-                onClick={() => setshowAddItem(true)}
+                onClick={() => setShowAddItem(true)}
               >
                 {/* <img src={addCustomerIcon} alt="" /> */}
                 Add Item
@@ -111,16 +93,15 @@ const ItemsBody = () => {
                       <SpinnerOnly /> {/* Spinner inside the table */}
                     </td>
                   </tr>
-                ) : (
-                    <tr className="border-t border-gray-600">
-                      <td className="px-4 py-2">juice</td>
-                      <td className="px-4 py-2">shake</td>
-                      <td className="px-4 py-2">$600</td>
-                     
+                ) : paginatedItems.length > 0 ? (
+                  paginatedItems.map((item, index) => (
+                    <tr key={index} className="border-t border-gray-600">
+                      <td className="px-4 py-2">{item.name}</td>
+                      <td className="px-4 py-2">{item.category}</td>
+                      <td className="px-4 py-2">${item.price}</td>
                     </tr>
-                
-                )}
-                {filteredCustomers.length === 0 && !isLoading && (
+                  ))
+                ) : (
                   <tr>
                     <td colSpan="9" className="text-center pt-6 font-medium">
                       No Items...
@@ -132,7 +113,7 @@ const ItemsBody = () => {
           </div>
 
           <div className="flex justify-between items-center my-4">
-            {filteredCustomers.length > 0 && !isLoading && (
+            {filteredItems.length > 0 && !isLoading && (
               <>
                 <button
                   disabled={currentPage === 1}
@@ -157,10 +138,7 @@ const ItemsBody = () => {
         </div>
 
         {/* Modals */}
-        {showAddItem && (
-          <AddCustomer onClose={() => setshowAddItem(false)} />
-        )}
-
+        {showAddItem && <AddItem setAddItemModal={setShowAddItem} />}
       </div>
     </>
   );

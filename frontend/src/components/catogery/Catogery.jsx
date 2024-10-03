@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
+import AddCategory from '../Add Category/AddCategory';
 
 function CatogeryBody() {
   const [categories, setCategories] = useState([]);
@@ -10,6 +11,7 @@ function CatogeryBody() {
     const fetchData = async()=>{
         try {
             const result = await api.getCatogory()
+            console.log(result)
             if(!result.error){
               setCategories(result.data)
             }
@@ -17,8 +19,8 @@ function CatogeryBody() {
             console.log(error)
         }
     }
-    fetchData
-  },[])
+    fetchData()
+  },[addCategory])
 
 
 
@@ -27,12 +29,14 @@ function CatogeryBody() {
   );
 
   return (
+    <>
+    {addCategory && <AddCategory setAddCategoryModal={setAddCategory}/>}
     <div className='min-h-screen bg-[#23346c] p-10 text-gray-100 relative'>
       <div className='flex justify-end gap-4 items-center mb-8'>
         <button
           onClick={()=>setAddCategory(true)}
           className='bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-700'
-        >
+          >
           Add Category
         </button>
 
@@ -42,7 +46,7 @@ function CatogeryBody() {
           className='px-4 py-2 rounded-md text-gray-700'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-        />
+          />
       </div>
 
       <div className='overflow-x-auto'>
@@ -79,6 +83,7 @@ function CatogeryBody() {
         </table>
       </div>
     </div>
+      </>
   );
 }
 

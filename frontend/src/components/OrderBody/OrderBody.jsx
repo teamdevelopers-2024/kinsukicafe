@@ -6,6 +6,7 @@ import ViewIncomeModal from "../View Income/ViewIncomeModal";
 import IncomeChart from "../Income Chart/IncomeChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
+import AddOrder from "../Add Order/AddOrder";
 
 const OrderBody = ({ addIncomeModal }) => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
@@ -15,9 +16,30 @@ const OrderBody = ({ addIncomeModal }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [addOrderModal , setAddOrderModal] = useState(false)
   const entriesPerPage = 5;
 
-  // Filtering based on search query
+
+  useEffect(() => {
+    const fetchIncomeHistory = async () => {
+      setIsLoading(true); // Set loading to true
+      try {
+        const response = await api.showIncome();
+        const sortedData = response.data.sort(
+          (a, b) => new Date(b.workDate) - new Date(a.workDate)
+        );
+        setIncomeHistoryData([]);
+        console.log(sortedData); // Log sorted data
+      } catch (error) {
+        console.error("Error fetching income history data", error);
+      } finally {
+        setIsLoading(false); // Set loading to false
+      }
+    };
+    if (!addOrderModal) {
+      fetchIncomeHistory();
+    }
+  }, [addOrderModal]);
   const filteredEntries = () => {
     const today = new Date();
     let filteredData = incomeHistoryData;
@@ -131,11 +153,12 @@ const OrderBody = ({ addIncomeModal }) => {
   //       cashAmount,
   //     ];
 
-  //     if (entry.paymentMethod === "UPI") {
-  //       totalUPI += entry.totalServiceCost || 0;
-  //     } else if (entry.paymentMethod === "Cash") {
-  //       totalCash += entry.totalServiceCost || 0;
-  //     }
+      // Accumulate totals based on payment method
+      // if (entry.paymentMethod === "UPI") {
+      //   totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
+      // } else if (entry.paymentMethod === "Cash") {
+      //   totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
+      // }
 
   //     row.forEach((cell, cellIndex) => {
   //       const xPosition =
@@ -174,6 +197,7 @@ const OrderBody = ({ addIncomeModal }) => {
   //     } else if (selectedOption === "yearly") {
   //       return `income_history_${selectedYear}.pdf`;
   //     } else {
+
   //       return `income_history_${new Date(
   //         selectedYear,
   //         selectedMonth - 1
@@ -184,89 +208,16 @@ const OrderBody = ({ addIncomeModal }) => {
   //   doc.save(fileName);
   // };
 
-  const generatePDF = (order) => {
-    const width = 75;
-    const itemHeight = 8; // Height for each item
-    const footerHeight = 25; // Space needed for footer
-    const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
-
-    const itemCount = order.orderDetails.length;
-    const totalHeight =
-      40 + Math.min(itemCount, maxVisibleItems) * itemHeight + footerHeight; // Dynamic height based on items
-
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: [width, totalHeight],
-      hotfixes: [],
-    });
-
-    doc.setTextColor(0, 0, 0);
-
-    // Shop Information
-    doc.setFontSize(8);
-    doc.text("Receipt", 35, 4);
-    doc.line(34.9, 5, 44.9, 5);
-    doc.text("Kinsuki Cafe, Near Vayaloram, Kottakkal", 15, 8);
-    doc.text("Phone: +91 98765 43210", 25, 12);
-    doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 14, 70, 14);
-    doc.setLineDash([]); // Reset to solid lines
-    doc.setFontSize(7);
-    doc.text(`${order.date}`, 25, 18);
-    doc.text(`11:13:06 AM`, 40, 18);
-
-    doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 21, 70, 21);
-    doc.setLineDash([]);
-
-    let startY = 24; // Adjust starting Y position
-
-    // Table headers
-    doc.setFontSize(7);
-    doc.text("No", 5, startY); // Index Number Header
-    doc.text("Item", 15, startY);
-    doc.text("Qty", 50, startY);
-    doc.text("Total", 62, startY);
-    doc.line(5, startY + 3, 70, startY + 3); // Header line
-
-    // Add items to the receipt
-    order.orderDetails.forEach((detail, index) => {
-      const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
-      doc.text((index + 1).toString(), 5, yOffset); // Index number
-      doc.text(detail.item, 15, yOffset);
-      doc.text(detail.quantity.toString(), 50, yOffset);
-      doc.text(`${detail.total.toFixed(2)}`, 62, yOffset);
-    });
-
-    // Add a separator line after the items
-    const itemsEndY =
-      startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
-    doc.line(5, itemsEndY + 5, 70, itemsEndY + 5);
-
-    // Calculate total position
-    const totalY = itemsEndY + 10;
-    doc.setFont("bold");
-    doc.text("Total:", 50, totalY);
-    doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
-
-    // Add Footer
-    const footerY = totalY + 10;
-    doc.setFont("normal");
-    doc.text("Thank you for your business!", 28, footerY);
-    doc.text("Visit us again!", 33, footerY + 5);
-
-    // Save the PDF with a unique name
-    doc.save(`receipt_${order.orderID}.pdf`);
-  };
 
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
+
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
           isLoading={isLoading}
           setIsModalOpen={setIsModalOpen}
+          setAddOrderModal={setAddOrderModal}
         />
 
         {/* Income History Table */}
@@ -379,7 +330,7 @@ const OrderBody = ({ addIncomeModal }) => {
       </main>
 
       {/* Modals */}
-      {viewIncomeModal && (
+      {/* {viewIncomeModal && (
         <ViewIncomeModal
           isOpen={viewIncomeModal}
           onClose={() => setViewIncomeModal(false)}
@@ -392,6 +343,9 @@ const OrderBody = ({ addIncomeModal }) => {
           setIsModalOpen={setIsModalOpen}
         />
       )}
+      {addOrderModal && (
+        <AddOrder setAddOrderModal={setAddOrderModal}/>
+      )} */}
     </div>
   );
 };
