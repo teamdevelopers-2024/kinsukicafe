@@ -5,12 +5,13 @@ const router = express.Router()
 
 router.get("/getCategory", controller.getCategory)
 router.get("/getItems",controller.getItems)
-
+router.get("/getOrders",controller.getOrders)
 
 
 
 router.post("/addCategory" ,controller.addCategory)
 router.post("/addItem",controller.addItem)
+router.post("/addOrder",controller.addOrder)
 
 
 
