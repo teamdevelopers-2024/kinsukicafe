@@ -38,9 +38,8 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
   const [periodIncome, setPeriodIncome] = useState(); // State for selected time period income
 
   useEffect(() => {
-    const total = incomeHistoryData.reduce((accumulator, entry) => {
-      const serviceCost = entry.totalServiceCost;
-      return accumulator + serviceCost;
+    const total = incomeHistoryData.reduce((accumulator, order) => {
+      return accumulator + order.totalAmount;
     }, 0);
     setTotalIncome(total);
 
