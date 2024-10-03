@@ -24,7 +24,10 @@ ChartJS.register(
   Legend
 );
 
+
 function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrderModal }) {
+
+
   const currentDate = new Date();
   const currentMonth = currentDate.getMonth(); // 0-11
   const Year = currentDate.getFullYear();
@@ -189,133 +192,139 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
   };
   return (
     <>
-      <div className="bg-[#00144c] p-8 rounded-xl flex justify-between items-center mb-8">
-        <div className="text-left space-y-3 w-1/3">
-          <h2 className="text-5xl font-bold text-[#ffeda5]">Total income</h2>
-          <h3 className="text-3xl text-green-300 font-bold">
-            {!isLoading ? new Intl.NumberFormat("en-IN", {
-              style: "currency",
-              currency: "INR",
-            }).format(totalIncome) : <SpinnerOnly />}
-          </h3>
-          <p className="text-gray-500">{new Date().toLocaleDateString()}</p>
-          <h2 className="text-3xl font-bold text-[#ffeda5]">
-            {timePeriod} income
-          </h2>
-          <h3 className="text-3xl text-green-300 font-bold">
-            {!isLoading ? new Intl.NumberFormat("en-IN", {
-              style: "currency",
-              currency: "INR",
-            }).format(periodIncome) : <SpinnerOnly />}
-          </h3>
-          {/* Download Button Here */}
-          <IncomeDownloadButton setIsModalOpen={setIsModalOpen} />
-        </div>
+      <div className="bg-[#00144c] p-4 lg:p-8 rounded-xl flex flex-row justify-between items-center mb-8">
+  {/* Left Section */}
+  <div className="text-left space-y-3 w-full lg:w-1/3 mb-6 lg:mb-0">
+    <h2 className="text-lg lg:text-4xl font-bold text-[#ffeda5]">Total income</h2>
+    <h3 className="text-sm lg:text-2xl text-green-300 font-bold">
+      {!isLoading
+        ? new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+        }).format(totalIncome)
+        : <SpinnerOnly />}
+    </h3>
+    <p className="text-xs lg:text-base text-gray-500">{new Date().toLocaleDateString()}</p>
+    <h2 className="text-sm lg:text-3xl font-bold text-[#ffeda5]">{timePeriod} income</h2>
+    <h3 className="text-sm lg:text-2xl text-green-300 font-bold">
+      {!isLoading
+        ? new Intl.NumberFormat("en-IN", {
+          style: "currency",
+          currency: "INR",
+        }).format(periodIncome)
+        : <SpinnerOnly />}
+    </h3>
+    {/* Download Button */}
+    <IncomeDownloadButton setIsModalOpen={setIsModalOpen} />
+  </div>
 
-        <div className="w-2/4 relative">
-          <div className="flex justify-end">
+  {/* Right Section */}
+  <div className="w-full lg:w-2/4 flex flex-col justify-center items-center">
+    
+    {/* Time Period Selector */}
+    <div className="flex justify-between mb-4 w-full">
+      <div className="bg-gray-700 px-1 py-0.5 rounded-full text-cyan-500">
+        <select
+          value={timePeriod}
+          onChange={handleTimePeriodChange}
+          className="text-xs lg:text-sm cursor-pointer bg-gray-700 rounded-full text-cyan-500 outline-none"
+        >
+          <option value="Daily">Daily</option>
+          <option value="Monthly">Monthly</option>
+          <option value="Yearly">Yearly</option>
+        </select>
+      </div>
+
+      {/* Chart Header */}
+      <div className="text-gray-300 text-center mb-2">
+        {timePeriod === "Daily" ? (
+          <span className="text-sm lg:text-base font-semibold">Last 7 Days</span>
+        ) : timePeriod === "Monthly" ? (
+          <span className="text-sm lg:text-base font-semibold">{currentYear}</span>
+        ) : (
+          <span className="text-sm lg:text-base font-semibold">Last 5 Years</span>
+        )}
+      </div>
+
+      <div className="flex justify-end">
             <button onClick={()=> setAddOrderModal(true)} className="cursor-pointer border border-[#ffeda5] bg-[#23346c] text-[#ffeda5] font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-[#00144c] hover:bg-opacity-30 transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2">
               Add Order +
             </button>
           </div>
-          <div className="absolute z-10 bottom--4 left-0 p-2">
-            <div className="bg-gray-700 px-1.5 py-1.5 rounded-full text-cyan-500">
-              <select
-                value={timePeriod}
-                onChange={handleTimePeriodChange}
-                className="cursor-pointer bg-gray-700 rounded-full text-cyan-500 outline-none"
-              >
-                <option value="Daily">Daily</option>
-                <option value="Monthly">Monthly</option>
-                <option value="Yearly">Yearly</option>
-              </select>
-            </div>
-          </div>
+    </div>
 
-          <div
-            className="mt-5"
-            style={{ width: "100%", height: "300px", marginBottom: "45px" }}
-          >
-            <div className="flex justify-center mb-2 text-gray-300">
-              {timePeriod === "Daily" ? (
-                <span className="text-lg font-semibold">Last 7 Days</span>
-              ) : timePeriod === "Monthly" ? (
-                <span className="text-lg font-semibold">{currentYear}</span>
-              ) : (
-                <span className="text-lg font-semibold">Last 5 Years</span>
-              )}
-            </div>
+    {/* Chart with Navigation */}
+    <div className="flex items-center justify-between w-full">
+      {/* Left Arrow */}
+      {timePeriod === "Monthly" && (
+        <button
+          onClick={handlePrevYear}
+          className="bg-gray-700 p-2 rounded-full text-cyan-400 hover:bg-gray-600 transition hidden sm:flex"
+        >
+          <FaChevronLeft />
+        </button>
+      )}
 
-            {timePeriod === "Monthly" && (
-              <>
-                <div
-                  className="absolute left-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-cyan-400 hover:bg-gray-600 transition"
-                  style={{
-                    marginLeft: "-8%",
-                    width: "6%",
-                    height: "10%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <button onClick={handlePrevYear} className="text-[#ffeda5]">
-                    <FaChevronLeft />
-                  </button>
-                </div>
-                <div
-                  className="absolute right-0 top-1/2 transform -translate-y-1/2 p-2 bg-gray-700 rounded-full text-cyan-400 hover:bg-gray-600 transition"
-                  style={{
-                    marginRight: "1%",
-                    width: "6%",
-                    height: "10%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <button onClick={handleNextYear} className="text-[#ffeda5]">
-                    <FaChevronRight />
-                  </button>
-                </div>
-              </>
-            )}
-
-            <Line
-              data={data}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: {
-                    display: false,
-                  },
-                  tooltip: {
-                    backgroundColor: "#333",
-                    titleColor: "#fff",
-                    bodyColor: "#fff",
-                  },
+      {/* Line Chart */}
+      <div className="flex-1 mx-2 lg:mx-4" style={{ height: "250px", width: "100%" }}>
+        <Line
+          data={data}
+          options={{
+            elements: {
+              point: {
+                hitRadius: 20,
+                radius:4,
+                drawActiveElementsOnTop:true
+              },
+            },
+            responsive: true,
+            plugins: {
+              legend: {
+                display: false,
+              },
+              tooltip: {
+                backgroundColor: "#333",
+                titleColor: "#fff",
+                bodyColor: "#fff",
+              },
+            },
+            scales: {
+              x: {
+                grid: {
+                  display: false, // Disable x-axis grid lines
                 },
-                scales: {
-                  x: {
-                    grid: {
-                      display: false, // Disable x-axis grid lines
-                    },
-                    ticks: {
-                      color: "#999", // X-axis label color
-                    },
+                ticks: {
+                  font: {
+                    size: 10,
                   },
-                  y: {
-                    display: false, // Hide the entire y-axis including labels
-                    grid: {
-                      display: false, // Disable y-axis grid lines
-                    },
-                  },
+                  color: "#999", // X-axis label color
                 },
-              }}
-            />
-          </div>
-        </div>
+              },
+              y: {
+                display: false, // Hide the entire y-axis including labels
+                grid: {
+                  display: false, // Disable y-axis grid lines
+                },
+              },
+            },
+          }}
+        />
       </div>
+
+      {/* Right Arrow */}
+      {timePeriod === "Monthly" && (
+        <button
+          onClick={handleNextYear}
+          className="bg-gray-700 p-2 rounded-full text-cyan-400 hover:bg-gray-600 transition hidden sm:flex"
+        >
+          <FaChevronRight />
+        </button>
+      )}
+    </div>
+  </div>
+</div>
+
+
     </>
   );
 }
