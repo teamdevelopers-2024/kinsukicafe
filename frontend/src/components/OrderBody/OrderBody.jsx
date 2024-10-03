@@ -236,7 +236,7 @@ const OrderBody = () => {
     doc.line(5, 14, 70, 14);
     doc.setLineDash([]); // Reset to solid lines
     doc.setFontSize(7);
-    doc.text(`${order.date}`, 25, 18);
+    doc.text(`${order.Date}`, 25, 18);
     doc.text(`11:13:06 AM`, 40, 18);
 
     doc.setLineDash([1, 1], 0); // Dotted line pattern
@@ -284,7 +284,7 @@ const OrderBody = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
+    <div  className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
@@ -344,6 +344,7 @@ const OrderBody = () => {
                     <td className="py-2">
                       <button
                         className="text-[#ffeda5]"
+                        onClick={()=> generatePDF(entry)}
                       >
                         Print
                       </button>
@@ -401,9 +402,10 @@ const OrderBody = () => {
           setIsModalOpen={setIsModalOpen}
         />
       )}
+      */}
       {addOrderModal && (
         <AddOrder setAddOrderModal={setAddOrderModal}/>
-      )} */}
+      )} 
     </div>
   );
 };

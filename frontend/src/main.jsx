@@ -5,6 +5,6 @@ import { AuthProvider } from './context/authContext'
 
 createRoot(document.getElementById('root')).render(
     <AuthProvider>
-    <App />
+    <App  />
     </AuthProvider>
 )
