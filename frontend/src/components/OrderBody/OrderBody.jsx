@@ -341,6 +341,13 @@ const OrderBody = () => {
                         View
                       </button>
                     </td>
+                    <td className="py-2">
+                      <button
+                        className="text-[#ffeda5]"
+                      >
+                        Print
+                      </button>
+                    </td>
                   </tr>
                 ))
               ) : (
