@@ -105,7 +105,7 @@ const AddItem = ({ setAddItemModal }) => {
               <input
                 type="text"
                 value={name.toUpperCase()}
-                onChange={handleFieldChange(setName, "name")}
+                onChange={(e)=> setName(e.target.value.toUpperCase())}
                 placeholder="Enter Name"
                 className="p-2 bg-gray-700 rounded w-full"
               />

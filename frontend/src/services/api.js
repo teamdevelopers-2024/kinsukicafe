@@ -136,6 +136,29 @@ async function getItems() {
   }
 }
 
+
+
+async function addOrder(body) {
+  try {
+    const response = await api.post("/addOrder",body)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
+
+async function getOrders() {
+  try {
+    const response = await api.get("/getOrders")
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -147,5 +170,7 @@ export default {
   getCatogory,
   addCategory,
   addItem,
-  getItems
+  getItems,
+  addOrder,
+  getOrders
 };

@@ -9,7 +9,7 @@ import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddOrder from "../Add Order/AddOrder";
 import logo from '../../assets/logoPDF.png'
 
-const OrderBody = ({ addIncomeModal }) => {
+const OrderBody = () => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
   // const [viewIncomeModal, setViewIncomeModal] = useState(false);
   // const [singleEntry, setSingleEntry] = useState({});
@@ -24,12 +24,12 @@ const OrderBody = ({ addIncomeModal }) => {
     const fetchIncomeHistory = async () => {
       setIsLoading(true); // Set loading to true
       try {
-        const response = await api.showIncome();
-        const sortedData = response.data.sort(
-          (a, b) => new Date(b.workDate) - new Date(a.workDate)
-        );
-        setIncomeHistoryData([]);
-        console.log(sortedData); // Log sorted data
+        const response = await api.getOrders();
+        if(!response.error){
+          setIncomeHistoryData(response.data);
+        }else{
+          swal("!error" , "error fetching data", "error")
+        }
       } catch (error) {
         console.error("Error fetching income history data", error);
       } finally {
@@ -491,68 +491,53 @@ const OrderBody = ({ addIncomeModal }) => {
 
           <table className="w-full text-left">
             <thead>
-              <tr className="text-gray-500 text-sm lg:text-base">
-                <th className="pb-2">Date</th>
-                <th className="pb-2">Order ID</th>
+              <tr className="text-gray-500">
+                <th className="pb-2" >Date</th>
+                <th className="pb-2" >Refference</th>
                 <th className="pb-2">Total Amount</th>
                 <th className="pb-2">Action</th>
                 <th className="pb-2">Print</th>
               </tr>
             </thead>
             <tbody>
-              {/* Example Dynamic Entries */}
-              {[
-                {
-                  date: "20-05-2024",
-                  orderID: "#8987657",
-                  totalAmount: 490,
-                  orderDetails: [
-                    { item: "Coffee", quantity: 1, total: 100 },
-                    { item: "Sandwich", quantity: 2, total: 200 },
-                    { item: "Pastry", quantity: 3, total: 190 },
-                  ],
-                },
-                {
-                  date: "28-05-2024",
-                  orderID: "#8677657",
-                  totalAmount: 700,
-                  orderDetails: [
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                    { item: "Tea", quantity: 2, total: 80 },
-                    { item: "Cake", quantity: 1, total: 300 },
-                    { item: "Cookie", quantity: 5, total: 320 },
-                  ],
-                },
-              ].map((order) => (
-                <tr key={order.orderID}>
-                  <td>{order.date}</td>
-                  <td>{order.orderID}</td>
-                  <td>₹{order.totalAmount}</td>
-                  <td>View</td>
-                  <td>
-                    <button
-                      onClick={() => generatePDF(order)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded"
-                    >
-                      Print
-                    </button>
+              {isLoading ? ( // Show loading indicator
+                <tr>
+                  <td colSpan="7" className="py-4 text-center text-gray-500">
+                    <SpinnerOnly />
                   </td>
                 </tr>
-              ))}
+              ) : paginatedEntries.length > 0 ? (
+                paginatedEntries.map((entry) => (
+                  <tr key={entry.id} className="border-b border-gray-700">
+                    <td className="py-2">
+                      {new Date(entry.Date).toLocaleDateString("en-GB")}
+                    </td>
+                    <td className="py-2">{entry.referenceNumber}</td>
+                    <td className="py-2">{entry.totalAmount}</td>
+                    <td className="py-2">
+                      <button
+                        onClick={() => handleViewClick(entry)}
+                        className="text-[#ffeda5]"
+                      >
+                        View
+                      </button>
+                    </td>
+                    <td className="py-2">
+                      <button
+                        className="text-[#ffeda5]"
+                      >
+                        Print
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="7" className="py-4 text-center text-gray-500">
+                    No data available
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
 
