@@ -1,4 +1,5 @@
 import CategoryDb from "./model/CategoryDb.js"
+import ExpenseDb from "./model/ExpenseDb.js"
 import itemDb from "./model/ItemsDb.js"
 import orderDb from "./model/OrderDb.js"
 
@@ -142,11 +143,30 @@ async function getOrders(req,res) {
 
 
 
+async function getExpense(req,res) {
+    try {
+        const data = await ExpenseDb.find().sort({_id:-1})
+        res.status(200).json({
+            error:false,
+            data:data
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
+
+
 export default {
     getCategory,
     addCategory,
     addItem,
     getItems,
     addOrder,
-    getOrders
+    getOrders,
+    getExpense
 }

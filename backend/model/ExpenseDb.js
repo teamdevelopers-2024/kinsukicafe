@@ -5,7 +5,7 @@ const expenseSchema = new mongoose.Schema({
         type:Date,
         required:true
     },
-    expenseType:{
+    expenseDetail:{
         type:String,
         required:true
     },
@@ -13,19 +13,6 @@ const expenseSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
-    expenseDetails:[
-        {
-            description:{
-                type:String,
-            },
-            amount:{
-                type:Number
-            },
-            reference:{
-                type:String
-            }
-        }
-    ]
 });
 
 const ExpenseDb = mongoose.model("Expense", expenseSchema);
