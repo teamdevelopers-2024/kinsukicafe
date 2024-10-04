@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import path from "path";
 import 'dotenv/config';
 import router from "./Router.js";
 import connectDB from "./database/connection.js";
@@ -15,25 +14,11 @@ const corsOptions = {
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: true, // This is important if you are handling cookies
 };
 
-
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://kinsukicafe.vercel.app");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
-    return res.status(200).json({});
-  }
-  next();
-});
-
-
+// Use CORS middleware with options
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Allow preflight requests for all routes
-
 
 // Middleware to parse JSON requests
 app.use(express.json());
@@ -42,8 +27,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Connect to the database
- connectDB();
-
+connectDB();
 
 // Health check route
 app.get("/", async (req, res) => {
