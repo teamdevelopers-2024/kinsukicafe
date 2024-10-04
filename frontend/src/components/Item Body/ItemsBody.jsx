@@ -98,7 +98,7 @@ const ItemsBody = () => {
                     <tr key={index} className="border-t border-gray-600">
                       <td className="px-4 py-2">{item.name}</td>
                       <td className="px-4 py-2">{item.category}</td>
-                      <td className="px-4 py-2">${item.price}</td>
+                      <td className="px-4 py-2">{item.price}</td>
                     </tr>
                   ))
                 ) : (
