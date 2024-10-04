@@ -16,26 +16,30 @@ const Expense = () => {
   const [customStartDate, setCustomStartDate] = useState(null);
   const [customEndDate, setCustomEndDate] = useState(null);
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const entriesPerPage = 5;
 
   useEffect(() => {
     const fetchExpenseHistory = async () => {
       try {
-        setLoading(true); // Start loading
+        setLoading(true);
         const response = await api.showExpense();
-        if (!response.error) {
+        if (response && response.data) {
           setExpenseHistoryData(response.data);
+        } else {
+          console.error("Unexpected response structure", response);
+          setExpenseHistoryData([]); // Fallback to empty array
         }
       } catch (error) {
         console.error("Error fetching expense history data", error);
+        setExpenseHistoryData([]); // Fallback to empty array
       } finally {
-        setLoading(false); // End loading
+        setLoading(false);
       }
     };
 
-    if (addExpenseModal === false) {
+    if (!addExpenseModal) {
       fetchExpenseHistory();
     }
   }, [addExpenseModal]);
@@ -43,7 +47,7 @@ const Expense = () => {
   const generateDownPDF = (
     startDate,
     endDate,
-    selectedOption, // "monthly", "yearly", or custom
+    selectedOption,
     selectedMonth,
     selectedYear
   ) => {
@@ -104,9 +108,8 @@ const Expense = () => {
 
     const headers = ["Date", "Expense Detail", "Amount"];
     const columnCount = headers.length;
-    const columnWidth = (doc.internal.pageSize.width - 20) / columnCount; // 10 margin on each side
+    const columnWidth = (doc.internal.pageSize.width - 20) / columnCount;
 
-    // Add headers to PDF with centered alignment
     headers.forEach((header, index) => {
       const xPosition = 10 + index * columnWidth;
       const textWidth = doc.getTextWidth(header);
@@ -119,12 +122,11 @@ const Expense = () => {
 
     filteredData.forEach((expense) => {
       const expenseDate = new Date(expense.date).toLocaleDateString("en-IN");
-      const expenseDetail = expense.expenseDetail || "N/A"; // Default to 'N/A' if undefined
-      const totalAmount = parseFloat(expense.totalExpense) || 0; // Ensure it's a number
+      const expenseDetail = expense.expenseDetail || "N/A";
+      const totalAmount = parseFloat(expense.totalExpense) || 0;
 
       totalExpense += totalAmount;
 
-      // Add each row with centered alignment
       const rowData = [expenseDate, expenseDetail, totalAmount.toFixed(2)];
       rowData.forEach((data, index) => {
         const xPosition = 10 + index * columnWidth;
@@ -138,7 +140,6 @@ const Expense = () => {
 
       currentY += 10;
 
-      // Check if content exceeds the page height
       if (currentY > pageHeight - margin) {
         doc.addPage();
         currentY = margin;
@@ -150,8 +151,7 @@ const Expense = () => {
       currentY = margin;
     }
 
-    // Draw a line above the total expense
-    const lineYPosition = currentY + 10; // Adjust this as needed
+    const lineYPosition = currentY + 10;
     doc.line(
       10,
       lineYPosition,
@@ -159,36 +159,28 @@ const Expense = () => {
       lineYPosition
     );
 
-    // Centering total expense at the bottom
     const totalText = `Total Expense: ${totalExpense.toFixed(2)}`;
     const totalTextWidth = doc.getTextWidth(totalText);
-    doc.text(
-      totalText,
-      140,
-      currentY + 20
-    );
+    doc.text(totalText, 140, currentY + 20);
 
-    // Save or download the PDF
     doc.save("Expense_History.pdf");
   };
 
-  // Filter entries based on search query
-  const filteredEntries = expenseHistoryData
-    .filter((entry) => {
-      // Convert search query to lowercase
-      const lowerCaseQuery = searchQuery.toLowerCase();
+  const filteredEntries = Array.isArray(expenseHistoryData)
+    ? expenseHistoryData
+        .filter((entry) => {
+          const lowerCaseQuery = searchQuery.toLowerCase();
+          return (
+            new Date(entry.date)
+              .toLocaleDateString("en-GB")
+              .includes(lowerCaseQuery) ||
+            entry.expenseType.toLowerCase().includes(lowerCaseQuery) ||
+            entry.totalExpense.toString().includes(lowerCaseQuery)
+          );
+        })
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+    : [];
 
-      return (
-        new Date(entry.date)
-          .toLocaleDateString("en-GB")
-          .includes(lowerCaseQuery) ||
-        entry.expenseType.toLowerCase().includes(lowerCaseQuery) ||
-        entry.totalExpense.toString().includes(lowerCaseQuery)
-      );
-    })
-    .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date (latest first)
-
-  // Calculate entries to display
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
   const currentEntries = filteredEntries.slice(
@@ -200,7 +192,6 @@ const Expense = () => {
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
-        {/* Total Expense Section */}
         <ExpenseChart
           expenseHistoryData={expenseHistoryData}
           isLoading={loading}
@@ -218,21 +209,20 @@ const Expense = () => {
             <thead>
               <tr className="text-gray-500">
                 <th className="pb-2">Date</th>
-                <th className="pb-2">ExpenseDetail</th>
+                <th className="pb-2">Expense Detail</th>
                 <th className="pb-2">Total Expense</th>
               </tr>
             </thead>
             <tbody>
-              {/* Modify loading and data display */}
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="py-4 text-center text-gray-500">
+                  <td colSpan="3" className="py-4 text-center text-gray-500">
                     <SpinnerOnly />
                   </td>
                 </tr>
               ) : filteredEntries.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="py-4 text-center text-gray-500">
+                  <td colSpan="3" className="py-4 text-center text-gray-500">
                     No data available
                   </td>
                 </tr>
@@ -259,7 +249,7 @@ const Expense = () => {
             <div className="flex justify-between items-center mt-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1} // Disable if on the first page
+                disabled={currentPage === 1}
                 className={`bg-cyan-400 px-4 py-2 rounded-lg ${
                   currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
@@ -273,7 +263,7 @@ const Expense = () => {
                 onClick={() =>
                   setCurrentPage((prev) => Math.min(prev + 1, pageCount))
                 }
-                disabled={currentPage === pageCount} // Disable if on the last page
+                disabled={currentPage === pageCount}
                 className={`bg-cyan-400 px-4 py-2 rounded-lg ${
                   currentPage === pageCount
                     ? "opacity-50 cursor-not-allowed"
@@ -290,7 +280,6 @@ const Expense = () => {
           <AddExpense setAddExpenseModal={setAddExpenseModal} />
         )}
 
-        {/* Modal for Viewing Expense */}
         <ExpenseModal
           isOpen={isModalOpen}
           expense={selectedExpense}

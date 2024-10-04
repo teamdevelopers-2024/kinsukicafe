@@ -2,7 +2,7 @@ import express from 'express'
 import controller from './controller.js'
 const router = express.Router()
 
-router.post('/login',controller.login)
+
 router.get("/getCategory", controller.getCategory)
 router.get("/getItems",controller.getItems)
 router.get("/getOrders",controller.getOrders)

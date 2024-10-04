@@ -1,221 +1,186 @@
+import { response } from "express"
 import CategoryDb from "./model/CategoryDb.js"
 import ExpenseDb from "./model/ExpenseDb.js"
 import itemDb from "./model/ItemsDb.js"
 import orderDb from "./model/OrderDb.js"
-import 'dotenv/config'
-async function login(req, res) {
+
+
+
+async function getCategory(req,res){
     try {
-        const ogUsername = process.env.ADMIN_USERNAME
-        const ogPassword = process.env.ADMIN_PASSWORD
-        const { username, password } = req.body
-
-        if (!username) {
-            return res.status(400).json({
-                error: true,
-                message: "please enter username"
-            })
-        }
-        if (!password) {
-            return res.status(400).json({
-                error: true,
-                message: 'please enter password'
-            })
-        }
-        if (username == ogUsername && password == ogPassword) {
-            res.status(200).json({
-                error: false,
-                message: "admin authenticated successfully"
-            })
-        } else {
-            res.status(400).json({
-                error: true,
-                message: "invalid credantials"
-            })
-        }
-
-    } catch (error) {
-        res.status(500).json({
-            error: true,
-            message: "internel server error"
-        })
-    }
-}
-
-async function getCategory(req, res) {
-    try {
-        const data = await CategoryDb.find().sort({ _id: -1 })
+        const data = await CategoryDb.find().sort({_id:-1})
 
         res.status(200).json({
-            error: false,
-            data: data
+            error:false,
+            data:data
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
 
 
-async function addCategory(req, res) {
+async function addCategory(req,res) {
     try {
         const category = req.body.categoryName
-        const isCat = await CategoryDb.findOne({ name: category })
-        if (isCat) {
+        const isCat = await CategoryDb.findOne({name:category})
+        if(isCat){
             return res.status(400).json({
-                error: true,
-                message: "Category is Already Exist"
+                error:true,
+                message:"Category is Already Exist"
             })
         }
         await CategoryDb.create({
-            name: category
+            name:category
         })
         res.status(200).json({
-            error: false,
-            message: "category added successfully"
+            error:false,
+            message:"category added successfully"
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
 
-async function addItem(req, res) {
+async function addItem(req,res) {
     try {
         const data = req.body
-        const isItem = await itemDb.findOne({ name: data.name })
-        if (isItem) {
+        const isItem = await itemDb.findOne({name:data.name})
+        if(isItem){
             return res.status(400).json({
-                error: true,
-                message: "The Item Is Already Exist"
+                error:true,
+                message:"The Item Is Already Exist"
             })
         }
         await itemDb.create({
-            name: data.name,
-            category: data.category,
-            price: data.price
+            name:data.name,
+            category:data.category,
+            price:data.price
         })
         await CategoryDb.updateOne(
-            { name: data.category },
-            { $inc: { totalItems: 1 } }
-        );
+            { name: data.category },          
+            { $inc: { totalItems: 1 } }       
+          );
         res.status(200).json({
-            error: false,
-            message: "item Added Successfully"
+            error:false,
+            message:"item Added Successfully"
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internal Server Error"
+            error:true,
+            message:"Internal Server Error"
         })
     }
 }
 
 
 
-async function getItems(req, res) {
+async function getItems(req,res) {
     try {
-        const data = await itemDb.find().sort({ _id: -1 })
+        const data = await itemDb.find().sort({_id:-1})
         res.status(200).json({
-            error: false,
-            data: data
+            error:false,
+            data:data
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
-async function addOrder(req, res) {
+async function addOrder(req,res) {
     try {
         const data = req.body
         console.log(req.body)
         await orderDb.create({
-            Date: data.date,
-            totalAmount: data.totalAmount,
-            orderDetails: data.orderDetails
+            Date:data.date,
+            totalAmount:data.totalAmount,
+            orderDetails:data.orderDetails
         })
         res.status(200).json({
-            error: false,
-            message: "Order Added Successfully"
+            error:false,
+            message:"Order Added Successfully"
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
 
 
-async function getOrders(req, res) {
+async function getOrders(req,res) {
     try {
-        const data = await orderDb.find().sort({ _id: -1 })
+        const data = await orderDb.find().sort({_id:-1})
         res.status(200).json({
-            error: false,
-            data: data
+            error:false,
+            data:data
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
 
 
-async function getExpense(req, res) {
+async function getExpense(req,res) {
     try {
-        const data = await ExpenseDb.find().sort({ _id: -1 })
+        const data = await ExpenseDb.find().sort({_id:-1})
         res.status(200).json({
-            error: false,
-            data: data
+            error:false,
+            data:data
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
 
 
-async function addExpense(req, res) {
+async function addExpense(req,res) {
     try {
         const data = req.body
         await ExpenseDb.create({
-            date: data.date,
-            expenseDetail: data.expenseDetail,
-            totalExpense: data.totalExpense
+            date:data.date,
+            expenseDetail:data.expenseDetail,
+            totalExpense:data.totalExpense
         })
         res.status(200).json({
-            error: false,
-            message: "expense addedd successfully"
+            error:false,
+            message:"expense addedd successfully"
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
-} async function getHomeData(req, res) {
+}async function getHomeData(req, res) {
     try {
         const now = new Date();
         const offset = 5.5 * 60 * 60 * 1000;
@@ -234,7 +199,7 @@ async function addExpense(req, res) {
                 $lt: endOfToday,
             },
         });
-
+        
         // Calculate total revenue and total orders today
         const totalRevenue = ordersToday.reduce((acc, order) => acc + order.totalAmount, 0);
         const totalOrdersToday = ordersToday.length;
@@ -256,7 +221,7 @@ async function addExpense(req, res) {
             },
         });
         const yesterdayRevenue = ordersYesterday.reduce((acc, order) => acc + order.totalAmount, 0);
-
+        
 
         // Get top 10 sold items
         const topSoldItems = await orderDb.aggregate([
@@ -283,7 +248,7 @@ async function addExpense(req, res) {
                 topSoldItems: topSoldItems, // Include top sold items in the response
             }
         });
-
+        
     } catch (error) {
         console.error("Error fetching today's revenue and expenses:", error);
         res.status(500).json({ error: true, message: "Could not fetch revenue and expense data" });
@@ -292,18 +257,18 @@ async function addExpense(req, res) {
 
 
 
-async function getLatestIncome(req, res) {
+async function getLatestIncome(req,res) {
     try {
-        const result = await orderDb.find().sort({ _id: -1 }).limit(5)
+        const result = await orderDb.find().sort({_id:-1}).limit(5)
         res.status(200).json({
-            error: false,
-            data: result
+            error:false,
+            data:result
         })
     } catch (error) {
         console.log(error)
         res.status(500).json({
-            error: true,
-            message: "Internel Server Error"
+            error:true,
+            message:"Internel Server Error"
         })
     }
 }
@@ -313,7 +278,6 @@ async function getLatestIncome(req, res) {
 
 
 export default {
-    login,
     getCategory,
     addCategory,
     addItem,
