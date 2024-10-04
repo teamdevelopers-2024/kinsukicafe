@@ -4,20 +4,21 @@ import api from "../../services/api";
 import revenueIcon from "../../assets/revenueIcon.svg";
 import expenseIcon from "../../assets/expenseIcon.svg";
 import customersIcon from "../../assets/customersIcon.svg";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 
 function HomeBody() {
+  const navigate = useNavigate();
   const [data, setData] = useState({
     todayIncome: undefined,
     todayExpense: undefined,
     todayCustomerCount: undefined,
     yesterdayIncome: undefined,
-    topSoldItems:[],
+    topSoldItems: [],
   });
   const [showShade, setShowShade] = useState(false);
-  const [latestIncome,setLatestIncome]= useState([])
-  const [loading , setLoading ] = useState(false)
+  const [latestIncome, setLatestIncome] = useState([]);
+  const [loading, setLoading] = useState(false);
   // Spring animations for numbers with scaling effect
   const todayIncomeSpring = useSpring({
     from: { number: 0, scale: 0.9 },
@@ -58,39 +59,34 @@ function HomeBody() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true)
+        setLoading(true);
         const result = await api.getHomeData();
         if (!result.error) {
-          setData(result.data)
+          setData(result.data);
           setShowShade(true); // Trigger shading effect
           setTimeout(() => setShowShade(false), 500); // Reset shading after animation
         }
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     };
     fetchData();
-    console.log(data)
+    console.log(data);
   }, []);
 
-
-  useEffect(()=>{
-    const fetchData =async ()=>{
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const result = await api.getLatestIncome()
-        if(!result.error){
-          setLatestIncome(result.data)
+        const result = await api.getLatestIncome();
+        if (!result.error) {
+          setLatestIncome(result.data);
         }
-      } catch (error) {
-        
-      }
-    }
-    fetchData()
-  },[])
-
-
+      } catch (error) {}
+    };
+    fetchData();
+  }, []);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -120,24 +116,28 @@ function HomeBody() {
               <img src={revenueIcon} alt="" />
             </div>
           </div>
-          {data.todayIncome || data.todayIncome == 0 ? <p className="text-2xl font-bold">
-            <animated.span
-              style={{
-                transform: todayIncomeSpring.scale.to((s) => `scale(${s})`),
-                position: "relative",
-                display: "inline-block",
-                overflow: "hidden",
-              }}
-              className="number-glance-effect"
-            >
-              {todayIncomeSpring.number.to((n) =>
-                new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                }).format(n.toFixed(0))
-              )}
-            </animated.span>
-          </p> : <SpinnerOnly />}
+          {data.todayIncome || data.todayIncome == 0 ? (
+            <p className="text-2xl font-bold">
+              <animated.span
+                style={{
+                  transform: todayIncomeSpring.scale.to((s) => `scale(${s})`),
+                  position: "relative",
+                  display: "inline-block",
+                  overflow: "hidden",
+                }}
+                className="number-glance-effect"
+              >
+                {todayIncomeSpring.number.to((n) =>
+                  new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(n.toFixed(0))
+                )}
+              </animated.span>
+            </p>
+          ) : (
+            <SpinnerOnly />
+          )}
 
           {/* Graph */}
           <div className="flex justify-between items-end mt-4 h-[135px]">
@@ -168,24 +168,28 @@ function HomeBody() {
               <img src={expenseIcon} alt="" />
             </div>
           </div>
-          {data.todayExpense || data.todayExpense == 0 ? <p className="text-2xl font-bold">
-            <animated.span
-              style={{
-                transform: todayExpenseSpring.scale.to((s) => `scale(${s})`),
-                position: "relative",
-                display: "inline-block",
-                overflow: "hidden",
-              }}
-              className="number-glance-effect"
-            >
-              {todayExpenseSpring.number.to((n) =>
-                new Intl.NumberFormat("en-IN", {
-                  style: "currency",
-                  currency: "INR",
-                }).format(n.toFixed(0))
-              )}
-            </animated.span>
-          </p> : <SpinnerOnly />}
+          {data.todayExpense || data.todayExpense == 0 ? (
+            <p className="text-2xl font-bold">
+              <animated.span
+                style={{
+                  transform: todayExpenseSpring.scale.to((s) => `scale(${s})`),
+                  position: "relative",
+                  display: "inline-block",
+                  overflow: "hidden",
+                }}
+                className="number-glance-effect"
+              >
+                {todayExpenseSpring.number.to((n) =>
+                  new Intl.NumberFormat("en-IN", {
+                    style: "currency",
+                    currency: "INR",
+                  }).format(n.toFixed(0))
+                )}
+              </animated.span>
+            </p>
+          ) : (
+            <SpinnerOnly />
+          )}
 
           {/* Graph */}
           <div className="flex justify-between items-end mt-4 h-[135px]">
@@ -218,21 +222,25 @@ function HomeBody() {
                 <img src={customersIcon} alt="" />
               </div>
             </div>
-            {data.todayCustomerCount || data.todayCustomerCount == 0 ? <p className="text-2xl font-bold">
-              <animated.span
-                style={{
-                  transform: todayCustomerCountSpring.scale.to(
-                    (s) => `scale(${s})`
-                  ),
-                  position: "relative",
-                  display: "inline-block",
-                  overflow: "hidden",
-                }}
-                className="number-glance-effect"
-              >
-                {todayCustomerCountSpring.number.to((n) => n.toFixed(0))}
-              </animated.span>
-            </p> : <SpinnerOnly />}
+            {data.todayCustomerCount || data.todayCustomerCount == 0 ? (
+              <p className="text-2xl font-bold">
+                <animated.span
+                  style={{
+                    transform: todayCustomerCountSpring.scale.to(
+                      (s) => `scale(${s})`
+                    ),
+                    position: "relative",
+                    display: "inline-block",
+                    overflow: "hidden",
+                  }}
+                  className="number-glance-effect"
+                >
+                  {todayCustomerCountSpring.number.to((n) => n.toFixed(0))}
+                </animated.span>
+              </p>
+            ) : (
+              <SpinnerOnly />
+            )}
 
             <p className="invisible">hello</p>
           </div>
@@ -256,26 +264,30 @@ function HomeBody() {
                 <img src={revenueIcon} alt="" />
               </div>
             </div>
-            {data.yesterdayIncome || data.yesterdayIncome == 0 ? <p className="text-2xl font-bold">
-              <animated.span
-                style={{
-                  transform: yesterdayIncomeSpring.scale.to(
-                    (s) => `scale(${s})`
-                  ),
-                  position: "relative",
-                  display: "inline-block",
-                  overflow: "hidden",
-                }}
-                className="number-glance-effect"
-              >
-                {yesterdayIncomeSpring.number.to((n) =>
-                  new Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                  }).format(n.toFixed(0))
-                )}
-              </animated.span>
-            </p> : <SpinnerOnly />}
+            {data.yesterdayIncome || data.yesterdayIncome == 0 ? (
+              <p className="text-2xl font-bold">
+                <animated.span
+                  style={{
+                    transform: yesterdayIncomeSpring.scale.to(
+                      (s) => `scale(${s})`
+                    ),
+                    position: "relative",
+                    display: "inline-block",
+                    overflow: "hidden",
+                  }}
+                  className="number-glance-effect"
+                >
+                  {yesterdayIncomeSpring.number.to((n) =>
+                    new Intl.NumberFormat("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                    }).format(n.toFixed(0))
+                  )}
+                </animated.span>
+              </p>
+            ) : (
+              <SpinnerOnly />
+            )}
 
             <p className="invisible">hello</p>
           </div>
@@ -318,26 +330,25 @@ function HomeBody() {
             <p className="invisible">hello</p>
           </div> */}
 
-          {/* Card 4 - Yesterday's Revenue */}
-          <div className="hidden bg-[#00144c] p-6 rounded-xl flex-col justify-between relative overflow-hidden lg:hidden xl:hidden sm:flex">
-            {transitions(
-              (styles, item) =>
-                item && (
-                  <animated.div
-                    style={styles}
-                    className="absolute inset-0 rounded-xl"
-                  />
-                )
-            )}
-            <div className="flex flex-row justify-between">
-              <h2 className="text-lg text-[#ffeda5] mb-2">
-                Yesterday's Revenue
-              </h2>
-              <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
-                <img src={revenueIcon} alt="" />
-              </div>
+        {/* Card 4 - Yesterday's Revenue */}
+        <div className="hidden bg-[#00144c] p-6 rounded-xl flex-col justify-between relative overflow-hidden lg:hidden xl:hidden sm:flex">
+          {transitions(
+            (styles, item) =>
+              item && (
+                <animated.div
+                  style={styles}
+                  className="absolute inset-0 rounded-xl"
+                />
+              )
+          )}
+          <div className="flex flex-row justify-between">
+            <h2 className="text-lg text-[#ffeda5] mb-2">Yesterday's Revenue</h2>
+            <div className="px-0.5 py-0.5 border border-[#ffeda5] rounded-md">
+              <img src={revenueIcon} alt="" />
             </div>
-            {data.yesterdayIncome || data.yesterdayIncome == 0 ? <p className="text-2xl font-bold">
+          </div>
+          {data.yesterdayIncome || data.yesterdayIncome == 0 ? (
+            <p className="text-2xl font-bold">
               <animated.span
                 style={{
                   transform: yesterdayIncomeSpring.scale.to(
@@ -356,48 +367,54 @@ function HomeBody() {
                   }).format(n.toFixed(0))
                 )}
               </animated.span>
-            </p> : <SpinnerOnly />}
+            </p>
+          ) : (
+            <SpinnerOnly />
+          )}
 
-            <p className="invisible">hello</p>
-          </div>
-          {/* On small screen end */}
+          <p className="invisible">hello</p>
+        </div>
+        {/* On small screen end */}
       </div>
-            
+
       <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
-  <h2 className="text-lg text-[#ffeda5] mb-4">Top Sold Items</h2>
-  {data.topSoldItems.length > 0 ? (
-    <div className="overflow-x-auto">
-      <table className="min-w-full bg-[#00144c] text-white">
-        <thead>
-          <tr>
-            <th className="px-4 py-2 text-left">#</th>
-            <th className="px-4 py-2 text-left">Item Name</th>
-            <th className="px-4 py-2 text-left">Total Sold</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.topSoldItems.map((item, index) => (
-            <tr key={index} className="border-b border-[#ffeda5]">
-              <td className="px-4 py-2">{index + 1}</td> {/* Row number */}
-              <td className="px-4 py-2">{item._id}</td>  {/* Item Name */}
-              <td className="px-4 py-2">{item.totalQuantity}</td> {/* Total Sold */}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  ) : (
-    loading ?
-    <SpinnerOnly /> : <div className="text-gray-500">No Datas Founded</div>
-  )}
-</div>
-
-
+        <h2 className="text-lg text-[#ffeda5] mb-4">Top Sold Items</h2>
+        {data.topSoldItems.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-[#00144c] text-white">
+              <thead>
+                <tr className="border-b border-[#ffeda5]">
+                  <th className="px-4 py-2 text-left">#</th>
+                  <th className="px-4 py-2 text-left">Item Name</th>
+                  <th className="px-4 py-2 text-left">Total Sold</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.topSoldItems.map((item, index) => (
+                  <tr key={index} className="border-b border-gray-700">
+                    <td className="px-4 py-2">{index + 1}</td>{" "}
+                    {/* Row number */}
+                    <td className="px-4 py-2">{item._id}</td> {/* Item Name */}
+                    <td className="px-4 py-2">{item.totalQuantity}</td>{" "}
+                    {/* Total Sold */}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : loading ? (
+          <SpinnerOnly />
+        ) : (
+          <div className="text-gray-500">No Datas Founded</div>
+        )}
+      </div>
 
       <div className="mt-8">
         <div className="flex justify-between px-3">
           <h2 className="text-lg text-[#ffeda5] mb-4">Recent Income</h2>
-          <button className="text-[#ffeda5]" onClick={() => navigate('/income')}>View All</button>
+          <button className="text-[#ffeda5]" onClick={() => navigate("/order")}>
+            View All
+          </button>
         </div>
         <div className="bg-[#00144c] p-6 rounded-xl">
           <table className="w-full text-left">
@@ -415,25 +432,22 @@ function HomeBody() {
                 </td>
               ) : (
                 Array.isArray(latestIncome) &&
-                latestIncome
-                  .map((income, index) => (
-                    <tr key={index} className="border-t border-gray-700">
-                      <td>{formatDate(income.Date)}</td>
-                      <td>{income.referenceNumber}</td>
-                      <td>
-                        {new Intl.NumberFormat("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                        }).format(income.totalAmount)}
-                      </td>
-                    </tr>
-                  ))
+                latestIncome.map((income, index) => (
+                  <tr key={index} className="border-t border-gray-700">
+                    <td>{formatDate(income.Date)}</td>
+                    <td>{income.referenceNumber}</td>
+                    <td>
+                      {new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                      }).format(income.totalAmount)}
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
-
           </table>
         </div>
-        
       </div>
     </div>
   );
