@@ -1,3 +1,4 @@
+import { response } from "express"
 import CategoryDb from "./model/CategoryDb.js"
 import ExpenseDb from "./model/ExpenseDb.js"
 import itemDb from "./model/ItemsDb.js"
@@ -179,9 +180,7 @@ async function addExpense(req,res) {
             message:"Internel Server Error"
         })
     }
-}
-
-async function getHomeData(req, res) {
+}async function getHomeData(req, res) {
     try {
         const now = new Date();
         const offset = 5.5 * 60 * 60 * 1000;
@@ -222,6 +221,7 @@ async function getHomeData(req, res) {
             },
         });
         const yesterdayRevenue = ordersYesterday.reduce((acc, order) => acc + order.totalAmount, 0);
+        
 
         // Get top 10 sold items
         const topSoldItems = await orderDb.aggregate([
@@ -236,11 +236,11 @@ async function getHomeData(req, res) {
             { $limit: 10 }, // Limit to top 10 items
         ]);
 
-        console.log(topSoldItems)
 
+        // Send response with all the data
         res.status(200).json({
             error: false,
-            data:{
+            data: {
                 todayIncome: totalRevenue,
                 todayExpense: totalExpenses,
                 todayCustomerCount: totalOrdersToday,
@@ -257,6 +257,25 @@ async function getHomeData(req, res) {
 
 
 
+async function getLatestIncome(req,res) {
+    try {
+        const result = await orderDb.find().sort({_id:-1}).limit(5)
+        res.status(200).json({
+            error:false,
+            data:result
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error:true,
+            message:"Internel Server Error"
+        })
+    }
+}
+
+
+
+
 
 export default {
     getCategory,
@@ -267,5 +286,6 @@ export default {
     getOrders,
     getExpense,
     addExpense,
-    getHomeData
+    getHomeData,
+    getLatestIncome
 }

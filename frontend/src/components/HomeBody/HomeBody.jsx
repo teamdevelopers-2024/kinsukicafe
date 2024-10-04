@@ -13,12 +13,10 @@ function HomeBody() {
     todayExpense: undefined,
     todayCustomerCount: undefined,
     yesterdayIncome: undefined,
-    topSoldItems:[]
+    topSoldItems:[],
   });
   const [showShade, setShowShade] = useState(false);
-  const [showIncome, setShowIncome] = useState();
-  const [showExpense, setShowExpense] = useState();
-  const navigate = useNavigate();
+  const [latestIncome,setLatestIncome]= useState([])
 
   // Spring animations for numbers with scaling effect
   const todayIncomeSpring = useSpring({
@@ -63,46 +61,33 @@ function HomeBody() {
         const result = await api.getHomeData();
         if (!result.error) {
           setData(result.data)
-          console.log(result)
           setShowShade(true); // Trigger shading effect
           setTimeout(() => setShowShade(false), 500); // Reset shading after animation
         }
       } catch (error) {
         console.log(error);
       }
-
-      try {
-        const result = await api.showIncome();
-        console.log("result of income", result.data);
-
-        if (Array.isArray(result.data)) {
-          setShowIncome(result.data);
-        } else {
-          console.error("Income data is not an array:", result.data);
-          setShowIncome([]); // Reset to empty array
-        }
-      } catch (error) {
-        console.log(error);
-        setShowIncome([]); // Reset to empty array on error
-      }
-
-      try {
-        const result = await api.showExpense();
-        console.log("result of expense", result.data);
-
-        if (Array.isArray(result.data)) {
-          setShowExpense(result.data);
-        } else {
-          console.error("Expense data is not an array:", result.data);
-          setShowExpense([]); // Reset to empty array
-        }
-      } catch (error) {
-        console.log(error);
-        setShowExpense([]); // Reset to empty array on error
-      }
     };
     fetchData();
+    console.log(data)
   }, []);
+
+
+  useEffect(()=>{
+    const fetchData =async ()=>{
+      try {
+        const result = await api.getLatestIncome()
+        if(!result.error){
+          setLatestIncome(result.data)
+        }
+      } catch (error) {
+        
+      }
+    }
+    fetchData()
+  },[])
+
+
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -114,7 +99,7 @@ function HomeBody() {
 
   return (
     <div className="min-h-screen bg-[#23346c] text-white p-16">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 mb-6 items-stretch">
         {/* Card 1 - Today's Revenue */}
         <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
           {transitions(
@@ -374,6 +359,37 @@ function HomeBody() {
           </div>
           {/* On small screen end */}
       </div>
+            
+      <div className="bg-[#00144c] p-6 rounded-xl flex flex-col justify-between relative overflow-hidden">
+  <h2 className="text-lg text-[#ffeda5] mb-4">Top Sold Items</h2>
+  {data.topSoldItems.length > 0 ? (
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-[#00144c] text-white">
+        <thead>
+          <tr>
+            <th className="px-4 py-2 text-left">#</th>
+            <th className="px-4 py-2 text-left">Item Name</th>
+            <th className="px-4 py-2 text-left">Total Sold</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.topSoldItems.map((item, index) => (
+            <tr key={index} className="border-b border-[#ffeda5]">
+              <td className="px-4 py-2">{index + 1}</td> {/* Row number */}
+              <td className="px-4 py-2">{item._id}</td>  {/* Item Name */}
+              <td className="px-4 py-2">{item.totalQuantity}</td> {/* Total Sold */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <SpinnerOnly />
+  )}
+</div>
+
+
+
       <div className="mt-8">
         <div className="flex justify-between px-3">
           <h2 className="text-lg text-[#ffeda5] mb-4">Recent Income</h2>
@@ -384,33 +400,27 @@ function HomeBody() {
             <thead>
               <tr>
                 <th className="text-[#ffeda5]">Date</th>
-                <th className="text-[#ffeda5]">Customer Name</th>
-                <th className="text-[#ffeda5]">Vehicle Number</th>
-                <th className="text-[#ffeda5]">Payment Type</th>
+                <th className="text-[#ffeda5]">reference</th>
                 <th className="text-[#ffeda5]">Amount</th>
               </tr>
             </thead>
             <tbody>
-              {!showIncome ? (
+              {!latestIncome ? (
                 <td colSpan="7" className="py-4 text-center text-gray-500">
                   <SpinnerOnly />
                 </td>
               ) : (
-                Array.isArray(showIncome) &&
-                showIncome
-                  .sort((a, b) => new Date(b.workDate) - new Date(a.workDate)) // Sort by date, latest first
-                  .slice(0, 5)
+                Array.isArray(latestIncome) &&
+                latestIncome
                   .map((income, index) => (
                     <tr key={index} className="border-t border-gray-700">
-                      <td>{formatDate(income.workDate)}</td>
-                      <td>{income.customerName}</td>
-                      <td>{income.vehicleNumber}</td>
-                      <td>{income.paymentMethod}</td>
+                      <td>{formatDate(income.Date)}</td>
+                      <td>{income.referenceNumber}</td>
                       <td>
                         {new Intl.NumberFormat("en-IN", {
                           style: "currency",
                           currency: "INR",
-                        }).format(income.totalServiceCost)}
+                        }).format(income.totalAmount)}
                       </td>
                     </tr>
                   ))
@@ -419,55 +429,7 @@ function HomeBody() {
 
           </table>
         </div>
-      </div>
-
-      <div className="mt-8">
-        <div className="flex justify-between px-3">
-          <h2 className="text-lg text-[#ffeda5] mb-4">Recent Expense</h2>
-          <button className="text-[#ffeda5]" onClick={() => navigate('/expense')}>View All</button>
-        </div>
-        <div className="bg-[#00144c] p-6 rounded-xl">
-          <table className="w-full text-left">
-            <thead>
-              <tr>
-                <th className="text-[#ffeda5]">Date</th>
-                <th className="text-[#ffeda5]">Payee Name</th>
-                <th className="text-[#ffeda5]">Expense Type</th>
-                <th className="text-[#ffeda5]">Payment Type</th>
-                <th className="text-[#ffeda5]">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!showExpense ? (
-                <tr>
-                  <td colSpan="5" className="py-4 text-center text-gray-500">
-                    <SpinnerOnly />
-                  </td>
-                </tr>
-              ) : (
-                Array.isArray(showExpense) &&
-                showExpense
-                  .sort((a, b) => new Date(b.date) - new Date(a.date)) // Sort by date, latest first
-                  .slice(0, 5)
-                  .map((expense, index) => (
-                    <tr key={index} className="border-t border-gray-700">
-                      <td>{formatDate(expense.date)}</td>
-                      <td>{expense.payeeName}</td>
-                      <td>{expense.expenseType}</td>
-                      <td>{expense.paymentMethod}</td>
-                      <td>
-                        {new Intl.NumberFormat("en-IN", {
-                          style: "currency",
-                          currency: "INR",
-                        }).format(expense.totalExpense)}
-                      </td>
-                    </tr>
-                  ))
-              )}
-            </tbody>
-
-          </table>
-        </div>
+        
       </div>
     </div>
   );

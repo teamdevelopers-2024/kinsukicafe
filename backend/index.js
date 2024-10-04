@@ -15,7 +15,7 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-  origin: ['https://sealand.vercel.app',"http://localhost:5173"],
+  origin: ['https://kinsukicafe.vercel.app',"http://localhost:5173"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Ensure OPTIONS is included
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
@@ -36,9 +36,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Connect to the database
  connectDB();
-app.get('/',(req,res)=>{
-    res.json("working")
-})
+
 
 // Health check route
 app.get("/", async (req, res) => {

@@ -32,7 +32,7 @@ const Navbar = () => {
       <nav style={{ fontFamily: 'MyCustomFont, sans-serif' }}  className="bg-[#23346c] p-4">
         <div className="container mx-auto flex justify-between items-center">
           {/* Logo */}
-          <div className="flex items-center">
+          <div className="flex pl-10 items-center">
             <img src={Logo} alt="Logo" className="h-12 w-28" />
           </div>
 
