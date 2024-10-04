@@ -8,7 +8,7 @@ router.get("/getItems",controller.getItems)
 router.get("/getOrders",controller.getOrders)
 router.get("/getExpenses", controller.getExpense)
 router.get("/getHomeData",controller.getHomeData)
-
+router.get("/getLatestIncome",controller.getLatestIncome)
 
 
 router.post("/addCategory" ,controller.addCategory)
