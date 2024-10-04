@@ -55,40 +55,40 @@ function HomeBody() {
     config: { duration: 500 },
   });
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       setLoading(true)
-  //       const result = await api.getHomeData();
-  //       if (!result.error) {
-  //         setData(result.data)
-  //         setShowShade(true); // Trigger shading effect
-  //         setTimeout(() => setShowShade(false), 500); // Reset shading after animation
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   };
-  //   fetchData();
-  //   console.log(data)
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const result = await api.getHomeData();
+        if (!result.error) {
+          setData(result.data)
+          setShowShade(true); // Trigger shading effect
+          setTimeout(() => setShowShade(false), 500); // Reset shading after animation
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false)
+      }
+    };
+    fetchData();
+    console.log(data)
+  }, []);
 
 
-  // useEffect(()=>{
-  //   const fetchData =async ()=>{
-  //     try {
-  //       const result = await api.getLatestIncome()
-  //       if(!result.error){
-  //         setLatestIncome(result.data)
-  //       }
-  //     } catch (error) {
+  useEffect(()=>{
+    const fetchData =async ()=>{
+      try {
+        const result = await api.getLatestIncome()
+        if(!result.error){
+          setLatestIncome(result.data)
+        }
+      } catch (error) {
         
-  //     }
-  //   }
-  //   fetchData()
-  // },[])
+      }
+    }
+    fetchData()
+  },[])
 
 
 
