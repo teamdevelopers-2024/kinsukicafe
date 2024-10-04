@@ -1,40 +1,49 @@
 import express from "express";
-import cors from 'cors'; // Importing cors
-import 'dotenv/config'; // Loads environment variables
-import router from "./router/adminRouter.js";
+import cors from "cors";
+import path from "path";
+import 'dotenv/config';
+import router from "./Router.js";
 import connectDB from "./database/connection.js";
+
 const app = express();
-
-const PORT = process.env.PORT || 5000;
-
-app.use(express.json());
-
-connectDB();
-
-app.use(express.urlencoded({ extended: true }));
 
 // CORS options
 const corsOptions = {
   origin: ["https://kinsukicafe.vercel.app","https://kinsukicafe.vercel.app/","http://localhost:5173"],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Ensure OPTIONS is included
-
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Allow preflight requests for all routes
 
-// Ensure OPTIONS requests are handled
-app.options('*', cors(corsOptions));
 
-// Use the router for API routes
+// Middleware to parse JSON requests
+app.use(express.json());
+
+// Middleware to parse URL-encoded data
+app.use(express.urlencoded({ extended: true }));
+
+// Connect to the database
+ connectDB();
+
+
+// Health check route
+app.get("/", async (req, res) => {
+  try {
+    res.status(200).json("Hello, working fine");
+  } catch (error) {
+    console.error("Error initializing app:", error);
+    res.status(500).json({ error: "Initialization error" });
+  }
+});
+
+// API routes
 app.use('/api', router);
 
 // Start the server
-app.listen(PORT, (err) => {
-  if (err) {
-    console.error("Error starting the server:", err);
-  } else {
-    console.log(`Backend server is running on port ${PORT}`);
-  }
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
