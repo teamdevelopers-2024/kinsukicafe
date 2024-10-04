@@ -9,11 +9,27 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-  origin: ["https://kinsukicafe.vercel.app","https://kinsukicafe.vercel.app/","http://localhost:5173"],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Ensure OPTIONS is included
+  origin: [
+    "https://kinsukicafe.vercel.app", // without trailing slash
+    "http://localhost:5173"
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
+
+
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://kinsukicafe.vercel.app");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
+
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Allow preflight requests for all routes
