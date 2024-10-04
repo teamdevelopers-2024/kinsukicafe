@@ -741,7 +741,7 @@ const OrderBody = () => {
             <thead>
               <tr className="text-gray-500">
                 <th className="pb-2" >Date</th>
-                <th className="pb-2" >Refference</th>
+                <th className="pb-2" >Reference</th>
                 <th className="pb-2">Total Amount</th>
                 <th className="pb-2">Action</th>
                 <th className="pb-2">Print</th>
