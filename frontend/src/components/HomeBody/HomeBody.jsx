@@ -13,6 +13,7 @@ function HomeBody() {
     todayExpense: undefined,
     todayCustomerCount: undefined,
     yesterdayIncome: undefined,
+    topSoldItems:[]
   });
   const [showShade, setShowShade] = useState(false);
   const [showIncome, setShowIncome] = useState();
@@ -59,9 +60,9 @@ function HomeBody() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await api.getTodayIncomeAndExpense();
+        const result = await api.getHomeData();
         if (!result.error) {
-          setData(result)
+          setData(result.data)
           console.log(result)
           setShowShade(true); // Trigger shading effect
           setTimeout(() => setShowShade(false), 500); // Reset shading after animation

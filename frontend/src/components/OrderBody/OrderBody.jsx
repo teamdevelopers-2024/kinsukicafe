@@ -569,7 +569,7 @@ const OrderBody = () => {
 
 
   return (
-    <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
+    <div  className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
         <IncomeChart
           incomeHistoryData={incomeHistoryData}
@@ -687,7 +687,9 @@ const OrderBody = () => {
           setIsModalOpen={setIsModalOpen}
         />
       )}
-      {addOrderModal && <AddOrder setAddOrderModal={setAddOrderModal} />}
+      {addOrderModal && (
+        <AddOrder setAddOrderModal={setAddOrderModal}/>
+      )} 
     </div>
   );
 };

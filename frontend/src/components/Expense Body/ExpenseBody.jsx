@@ -147,8 +147,8 @@ const Expense = () => {
             <thead>
               <tr className="text-gray-500">
                 <th className="pb-2">Date</th>
+                <th className="pb-2">ExpenseDetail</th>
                 <th className="pb-2">Total Expense</th>
-                <th className="pb-2">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -172,18 +172,13 @@ const Expense = () => {
                       {new Date(entry.date).toLocaleDateString("en-GB")}
                     </td>
                     <td className="py-4">
+                     {entry.expenseDetail}
+                    </td>
+                    <td className="py-4">
                       {new Intl.NumberFormat("en-IN", {
                         style: "currency",
                         currency: "INR",
                       }).format(entry.totalExpense)}
-                    </td>
-                    <td className="py-4">
-                      <button
-                        onClick={() => handleViewExpense(entry)}
-                        className="bg-cyan-400 text-gray-900 px-3 py-1 rounded"
-                      >
-                        View
-                      </button>
                     </td>
                   </tr>
                 ))

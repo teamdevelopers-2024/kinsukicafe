@@ -36,7 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Connect to the database
  connectDB();
-
+app.get('/',(req,res)=>{
+    res.json("working")
+})
 
 // Health check route
 app.get("/", async (req, res) => {
