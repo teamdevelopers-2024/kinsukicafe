@@ -62,151 +62,7 @@ const OrderBody = () => {
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
-
-  // const handleViewClick = (entry) => {
-  //   setSingleEntry(entry);
-  //   setViewIncomeModal(true);
-  // };
-
-  // PDF Generation logic
-  // const generatePDF = (
-  //   startDate,
-  //   endDate,
-  //   selectedOption,
-  //   selectedMonth,
-  //   selectedYear
-  // ) => {
-  //   const doc = new jsPDF();
-  //   doc.setFontSize(12);
-
-  //   // Adjust endDate to include the entire day
-  //   endDate.setHours(23, 59, 59, 999);
-
-  //   // Dynamic title based on selected options
-  //   let title;
-  //   if (selectedOption === "monthly") {
-  //     title = `Income History for ${new Date(
-  //       selectedYear,
-  //       selectedMonth - 1
-  //     ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
-  //   } else if (selectedOption === "yearly") {
-  //     title = `Income History for ${selectedYear}`;
-  //   } else {
-  //     title = `Income History from ${startDate.toLocaleDateString(
-  //       "en-IN"
-  //     )} to ${endDate.toLocaleDateString("en-IN")}`;
-  //   }
-
-  //   const headers = [
-  //     "Date",
-  //     "Name",
-  //     "Vehicle Number",
-  //     "Phone Number",
-  //     "UPI",
-  //     "Cash",
-  //   ];
-
-  //   const filteredData = incomeHistoryData.filter((entry) => {
-  //     const entryDate = new Date(entry.workDate);
-  //     return entryDate >= startDate && entryDate <= endDate;
-  //   });
-
-  //   const columnWidths = [30, 35, 40, 40, 30, 30];
-
-  //   // Add title
-  //   if (typeof title === "string") {
-  //     doc.text(title, 75, 10);
-  //   }
-
-  //   headers.forEach((header, index) => {
-  //     const xPosition =
-  //       10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
-  //     if (typeof header === "string") {
-  //       doc.text(header, xPosition, 25);
-  //     }
-  //   });
-
-  //   // Add a separator line
-  //   doc.line(10, 30, 200, 30);
-
-  //   let totalUPI = 0;
-  //   let totalCash = 0;
-
-  //   filteredData.forEach((entry, index) => {
-  //     const entryDate = new Date(entry.workDate).toLocaleDateString("en-GB");
-  //     const upiAmount =
-  //       entry.paymentMethod === "UPI" || entry.paymentMethod === "Repaid-UPI"
-  //         ? entry.totalServiceCost.toFixed(2)
-  //         : "";
-  //     const cashAmount =
-  //       entry.paymentMethod === "Cash" || entry.paymentMethod === "Repaid-Cash"
-  //         ? entry.totalServiceCost.toFixed(2)
-  //         : "";
-
-  //     const row = [
-  //       entryDate,
-  //       entry.customerName,
-  //       entry.vehicleNumber,
-  //       entry.contactNumber ? entry.contactNumber.toString() : "",
-  //       upiAmount,
-  //       cashAmount,
-  //     ];
-
-  //     Accumulate totals based on payment method
-  //     if (entry.paymentMethod === "UPI") {
-  //       totalUPI += entry.totalServiceCost || 0; // Accumulate total UPI
-  //     } else if (entry.paymentMethod === "Cash") {
-  //       totalCash += entry.totalServiceCost || 0; // Accumulate total Cash
-  //     }
-
-  //     row.forEach((cell, cellIndex) => {
-  //       const xPosition =
-  //         10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
-  //       if (typeof cell === "string") {
-  //         doc.text(cell, xPosition, 35 + index * 10);
-  //       }
-  //     });
-  //   });
-
-  //   const totalRowYPosition = 35 + filteredData.length * 10;
-  //   doc.line(10, totalRowYPosition, 200, totalRowYPosition);
-  //   const totalIncome = totalUPI + totalCash;
-
-  //   doc.text(
-  //     `Total Income (UPI): ${totalUPI.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 10
-  //   );
-  //   doc.text(
-  //     `Total Income (Cash): ${totalCash.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 20
-  //   );
-  //   doc.text(
-  //     `Total Income (Overall): ${totalIncome.toFixed(2)}`,
-  //     130,
-  //     totalRowYPosition + 30
-  //   );
-
-  //   const fileName = (() => {
-  //     if (selectedOption === "custom") {
-  //       return `income_history_${startDate.toLocaleDateString(
-  //         "en-GB"
-  //       )}_to_${endDate.toLocaleDateString("en-GB")}.pdf`;
-  //     } else if (selectedOption === "yearly") {
-  //       return `income_history_${selectedYear}.pdf`;
-  //     } else {
-
-  //       return `income_history_${new Date(
-  //         selectedYear,
-  //         selectedMonth - 1
-  //       ).toLocaleString("default", { month: "long" })}_${selectedYear}.pdf`;
-  //     }
-  //   })();
-
-  //   doc.save(fileName);
-  // };
-
+  
   const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
@@ -282,6 +138,148 @@ const OrderBody = () => {
     // Save the PDF with a unique name
     doc.save(`receipt_${order.orderID}.pdf`);
   };
+
+  const generateDownPDF = (
+    startDate,
+    endDate,
+    selectedOption, // "monthly", "yearly", or custom
+    selectedMonth, 
+    selectedYear
+) => {
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+
+    // Page height (A4 size in jsPDF: 297mm height or roughly 290 usable)
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 10;
+    let currentY = 35; // Initial Y position for table rows
+
+    // Convert startDate and endDate to Date objects
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    
+    // Ensure that endDate includes the entire day
+    end.setHours(23, 59, 59, 999);
+
+    // Filter data based on selected options or date range
+    let filteredData = [];
+
+    if (selectedOption === "monthly") {
+        filteredData = incomeHistoryData.filter((order) => {
+            const orderDate = new Date(order.Date);
+            return (
+                orderDate.getMonth() + 1 === selectedMonth &&
+                orderDate.getFullYear() === selectedYear
+            );
+        });
+    } else if (selectedOption === "yearly") {
+        filteredData = incomeHistoryData.filter((order) => {
+            const orderDate = new Date(order.Date);
+            return orderDate.getFullYear() === selectedYear;
+        });
+    } else if (startDate && endDate) {
+        filteredData = incomeHistoryData.filter((order) => {
+            const orderDate = new Date(order.Date);
+            return orderDate >= start && orderDate <= end;
+        });
+    } else {
+        filteredData = incomeHistoryData;
+    }
+
+    // Dynamic title based on selected options
+    let title;
+    if (selectedOption === "monthly") {
+        title = `Income History for ${new Date(
+            selectedYear,
+            selectedMonth - 1
+        ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
+    } else if (selectedOption === "yearly") {
+        title = `Income History for ${selectedYear}`;
+    } else if (startDate && endDate) {
+        title = `Income History from ${start.toLocaleDateString("en-IN")} to ${end.toLocaleDateString("en-IN")}`;
+    } else {
+        title = `Full Income History`;
+    }
+
+    // Add title
+    if (typeof title === "string") {
+        doc.text(title, 75, 10);
+    }
+
+    // Add table headers
+    const headers = [
+        "Date", 
+        "Total Amount", 
+        "Item", 
+        "Quantity", 
+        "Total Item Amount"
+    ];
+
+    const columnWidths = [30, 40, 50, 20, 35]; // Adjust column widths
+
+    // Add headers to PDF
+    headers.forEach((header, index) => {
+        const xPosition = 10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+        doc.text(header, xPosition, 25);
+    });
+
+    // Add separator line below headers
+    doc.line(10, 30, 200, 30);
+
+    let totalIncome = 0;
+
+    // Loop through the filtered data to populate the table
+    filteredData.forEach((order) => {
+        const orderDate = new Date(order.Date).toLocaleDateString("en-IN");
+        const totalAmount = order.totalAmount.toFixed(2);
+
+        totalIncome += order.totalAmount;
+
+        // Add each row
+        doc.text(orderDate, 10, currentY);
+        doc.text(totalAmount, 40, currentY);
+
+        // Add details of items in the order
+        order.orderDetails.forEach((detail, index) => {
+            const item = detail.item;
+            const quantity = detail.quantity.toString();
+            const totalItemAmount = (detail.total * detail.quantity).toFixed(2);
+
+            doc.text(item, 80, currentY);
+            doc.text(quantity, 130, currentY);
+            doc.text(totalItemAmount, 150, currentY);
+
+            currentY += 10;
+
+            // Check if content exceeds the page height, create a new page if necessary
+            if (currentY > pageHeight - margin) {
+                doc.addPage();
+                currentY = margin; // Reset Y position after new page
+            }
+        });
+
+        currentY += 10; // Additional space between orders
+
+        // Check if content exceeds the page height, create a new page if necessary
+        if (currentY > pageHeight - margin) {
+            doc.addPage();
+            currentY = margin; // Reset Y position after new page
+        }
+    });
+
+    // Add total income at the bottom (on the last page)
+    if (currentY > pageHeight - margin) {
+        doc.addPage();
+        currentY = margin;
+    }
+    doc.text(`Total Income: ₹${totalIncome.toFixed(2)}`, 10, currentY + 10);
+
+    // Save or download the PDF
+    doc.save("Income_History.pdf");
+};
+
+  
+  
 
   return (
     <div  className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
@@ -396,13 +394,14 @@ const OrderBody = () => {
           entry={singleEntry}
         />
       )}
-      {isModalOpen && (
+      */}
+
+       {isModalOpen && (
         <PDFDownloadModal
-          generatePDF={generatePDF}
+          generatePDF={generateDownPDF}
           setIsModalOpen={setIsModalOpen}
         />
       )}
-      */}
       {addOrderModal && (
         <AddOrder setAddOrderModal={setAddOrderModal}/>
       )} 
