@@ -15,8 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // CORS options
 const corsOptions = {
-  origin: ['https://kinsukicafe.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  origin: ["https://kinsukicafe.vercel.app","https://kinsukicafe.vercel.app/","http://localhost:5173"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Ensure OPTIONS is included
+
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
