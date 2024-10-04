@@ -16,7 +16,7 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuth) {
-      navigate('/home');
+      navigate("/home");
     }
   }, [isAuth, navigate]);
 
@@ -29,14 +29,13 @@ const Login = () => {
 
     const result = await api.login({ username, password });
     if (result.error) {
-      setError('Invalid credentials');
+      setError("Invalid credentials");
     } else {
-      setError('');
-      login();
-      navigate('/home');
+      setError("")
+      login()
+      navigate("/home");
     }
   };
-
   return (
     <div className="flex flex-col md:flex-row h-screen items-center justify-center bg-[#23346c] overflow-hidden">
       {/* Left section with the logo */}
@@ -61,7 +60,10 @@ const Login = () => {
 
         {/* Username Input */}
         <div className="mb-6 w-full max-w-md">
-          <label className="block text-[#ffeda5] text-sm font-bold mb-2" htmlFor="username">
+          <label
+            className="block text-[#ffeda5] text-sm font-bold mb-2"
+            htmlFor="username"
+          >
             <div className="flex items-center">
               <img src={User} alt="user svg" className="mr-2" />
               Username
@@ -79,7 +81,10 @@ const Login = () => {
 
         {/* Password Input */}
         <div className="mb-6 w-full max-w-md">
-          <label className="block text-[#ffeda5] text-sm font-bold mb-2" htmlFor="password">
+          <label
+            className="block text-[#ffeda5] text-sm font-bold mb-2"
+            htmlFor="password"
+          >
             <div className="flex items-center">
               <img src={Lock} alt="lock svg" className="mr-2" />
               Password

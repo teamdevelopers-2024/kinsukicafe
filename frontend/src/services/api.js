@@ -10,7 +10,7 @@ import axios from "axios";
 // })
 
 const api = axios.create({
-  baseURL: "https://kinsukicafe-api.vercel.app/api", 
+  baseURL: "https://kinsukicafe-api.vercel.app/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -98,7 +98,7 @@ async function getTodayIncomeAndExpense() {
 }
 
 
-async function  getCatogory() {
+async function getCatogory() {
   try {
     const response = await api.get('/getCategory')
     const data = response.data
@@ -112,7 +112,7 @@ async function  getCatogory() {
 
 async function addCategory(body) {
   try {
-    const response = await api.post('/addCategory',body)
+    const response = await api.post('/addCategory', body)
     const data = response.data
     return data
   } catch (error) {
@@ -124,7 +124,7 @@ async function addCategory(body) {
 
 async function addItem(body) {
   try {
-    const response = await api.post('/addItem',body)
+    const response = await api.post('/addItem', body)
     return response.data
   } catch (error) {
     console.log(error)
@@ -148,7 +148,7 @@ async function getItems() {
 
 async function addOrder(body) {
   try {
-    const response = await api.post("/addOrder",body)
+    const response = await api.post("/addOrder", body)
     return response.data
   } catch (error) {
     console.log(error)
