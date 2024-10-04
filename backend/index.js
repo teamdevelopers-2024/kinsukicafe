@@ -8,15 +8,17 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-  origin:"*",
-
+  origin: "https://kinsukicafe.vercel.app", // Specific frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, // This is important if you are handling cookies
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
 
 // Use CORS middleware with options
 app.use(cors(corsOptions));
+
+// Preflight requests handler
+app.options('*', cors(corsOptions));
 
 // Middleware to parse JSON requests
 app.use(express.json());
