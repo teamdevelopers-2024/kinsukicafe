@@ -8,7 +8,7 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-  origin: "https://kinsukicafe.vercel.app", // Specific frontend origin
+  origin: ["https://kinsukicafe.vercel.app","http://localhost:5173"], // Specific frontend origin
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
