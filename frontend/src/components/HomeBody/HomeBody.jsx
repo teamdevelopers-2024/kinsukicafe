@@ -17,7 +17,7 @@ function HomeBody() {
   });
   const [showShade, setShowShade] = useState(false);
   const [latestIncome,setLatestIncome]= useState([])
-
+  const [loading , setLoading ] = useState(false)
   // Spring animations for numbers with scaling effect
   const todayIncomeSpring = useSpring({
     from: { number: 0, scale: 0.9 },
@@ -58,6 +58,7 @@ function HomeBody() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true)
         const result = await api.getHomeData();
         if (!result.error) {
           setData(result.data)
@@ -66,6 +67,8 @@ function HomeBody() {
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false)
       }
     };
     fetchData();
@@ -384,7 +387,8 @@ function HomeBody() {
       </table>
     </div>
   ) : (
-    <SpinnerOnly />
+    loading ?
+    <SpinnerOnly /> : <div className="text-gray-500">No Datas Founded</div>
   )}
 </div>
 

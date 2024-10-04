@@ -13,7 +13,7 @@ async function getCategory(req,res){
         res.status(200).json({
             error:false,
             data:data
-        })
+        }) 
     } catch (error) {
         console.log(error)
         res.status(500).json({
