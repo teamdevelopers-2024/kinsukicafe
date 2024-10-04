@@ -2,7 +2,7 @@ import axios from "axios";
 
 
 const api = axios.create({
-  baseURL: "https://kinsukicafe.vercel.app/api", 
+  baseURL: "https://kinsukicafe-api.vercel.app/api", 
   headers: {
     "Content-Type": "application/json",
   },
