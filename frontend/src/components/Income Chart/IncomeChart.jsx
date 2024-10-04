@@ -48,28 +48,28 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
     const calculatePeriodIncome = () => {
       if (timePeriod === "Monthly") {
         return incomeHistoryData.reduce((total, entry) => {
-          const workDate = new Date(entry.workDate);
-          return workDate.getMonth() === currentMonth &&
-            workDate.getFullYear() === currentYear
-            ? total + entry.totalServiceCost
+          const date = new Date(entry.Date);
+          return date.getMonth() === currentMonth &&
+            date.getFullYear() === currentYear
+            ? total + entry.totalAmount
             : total;
         }, 0);
       } else if (timePeriod === "Daily") {
         const today = new Date();
         return incomeHistoryData.reduce((total, entry) => {
-          const workDate = new Date(entry.workDate);
+          const date = new Date(entry.Date);
           const dayIndex = Math.floor(
-            (today - workDate) / (1000 * 60 * 60 * 24)
+            (today - date) / (1000 * 60 * 60 * 24)
           );
           return dayIndex >= 0 && dayIndex < 7
-            ? total + entry.totalServiceCost
+            ? total + entry.totalAmount
             : total;
         }, 0);
       } else if (timePeriod === "Yearly") {
         return incomeHistoryData.reduce((total, entry) => {
-          const workDate = new Date(entry.workDate);
-          return workDate.getFullYear() === currentYear
-            ? total + entry.totalServiceCost
+          const date = new Date(entry.Date);
+          return date.getFullYear() === currentYear
+            ? total + entry.totalAmount
             : total;
         }, 0);
       }
@@ -89,13 +89,13 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
   const getMonthlyData = () => {
     const monthlyIncome = Array(12).fill(0);
     const currentYearData = incomeHistoryData.filter(
-      (entry) => new Date(entry.workDate).getFullYear() === currentYear
+      (entry) => new Date(entry.Date).getFullYear() === currentYear
     );
 
     currentYearData.forEach((entry) => {
-      const entryDate = new Date(entry.workDate);
+      const entryDate = new Date(entry.Date);
       const month = entryDate.getMonth();
-      monthlyIncome[month] += entry.totalServiceCost || 0;
+      monthlyIncome[month] += entry.totalAmount || 0;
     });
 
     return monthlyIncome.map((income, index) => ({
@@ -117,10 +117,10 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
     }
 
     incomeHistoryData.forEach((entry) => {
-      const entryDate = new Date(entry.workDate);
+      const entryDate = new Date(entry.Date);
       const dayIndex = Math.floor((today - entryDate) / (1000 * 60 * 60 * 24));
       if (dayIndex >= 0 && dayIndex < 7) {
-        last7Days[6 - dayIndex] += entry.totalServiceCost || 0;
+        last7Days[6 - dayIndex] += entry.totalAmount || 0;
       }
     });
 
@@ -140,11 +140,11 @@ function IncomeChart({ incomeHistoryData, setIsModalOpen, isLoading, setAddOrder
     }
 
     incomeHistoryData.forEach((entry) => {
-      const entryDate = new Date(entry.workDate);
+      const entryDate = new Date(entry.Date);
       const yearIndex = entryDate.getFullYear() - (currentYear - 4);
 
       if (yearIndex >= 0 && yearIndex < 5) {
-        yearlyIncome[yearIndex] += entry.totalServiceCost || 0; // Parse amount correctly
+        yearlyIncome[yearIndex] += entry.totalAmount || 0; // Parse amount correctly
       }
     });
 
