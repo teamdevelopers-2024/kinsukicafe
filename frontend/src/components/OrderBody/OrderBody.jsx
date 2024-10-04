@@ -62,7 +62,6 @@ const OrderBody = () => {
     (currentPage - 1) * entriesPerPage,
     currentPage * entriesPerPage
   );
-  
   const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
