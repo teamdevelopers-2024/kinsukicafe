@@ -78,11 +78,11 @@ const AddItem = ({ setAddItemModal }) => {
           setErrors({name:data.message})
           return;
         }
-        swal("Success!", "Expense added successfully!", "success");
+        swal("Success!", "Item added successfully!", "success");
         setAddItemModal(false); // Close the modal after saving
       } catch (err) {
         console.error(err);
-        swal("Error!", "Failed to add expense.", "error");
+        swal("Error!", "Failed to add item.", "error");
       } finally {
         setLoading(false);
       }
