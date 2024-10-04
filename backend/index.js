@@ -8,7 +8,7 @@ const app = express();
 
 // CORS options
 const corsOptions = {
-  origin:"https://kinsukicafe.vercel.app",
+  origin:"*",
 
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
