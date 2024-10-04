@@ -400,7 +400,7 @@ function HomeBody() {
             <thead>
               <tr>
                 <th className="text-[#ffeda5]">Date</th>
-                <th className="text-[#ffeda5]">reference</th>
+                <th className="text-[#ffeda5]">Reference</th>
                 <th className="text-[#ffeda5]">Amount</th>
               </tr>
             </thead>

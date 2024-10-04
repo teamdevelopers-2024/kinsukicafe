@@ -17,7 +17,7 @@ const Expense = () => {
   const [customEndDate, setCustomEndDate] = useState(null);
   const [pdfModalOpen, setPdfModalOpen] = useState(false);
   const [loading, setLoading] = useState(false); // Add loading state
-  const [addExpenseModal , setAddExpenseModal] = useState(false)
+  const [addExpenseModal, setAddExpenseModal] = useState(false);
   const entriesPerPage = 5;
 
   useEffect(() => {
@@ -25,8 +25,8 @@ const Expense = () => {
       try {
         setLoading(true); // Start loading
         const response = await api.showExpense();
-        if(!response.error){
-          setExpenseHistoryData(response.data); 
+        if (!response.error) {
+          setExpenseHistoryData(response.data);
         }
       } catch (error) {
         console.error("Error fetching expense history data", error);
@@ -40,75 +40,153 @@ const Expense = () => {
     }
   }, [addExpenseModal]);
 
-  const generatePDF = (startDate, endDate) => {
+  const generateDownPDF = (
+    startDate,
+    endDate,
+    selectedOption, // "monthly", "yearly", or custom
+    selectedMonth,
+    selectedYear
+  ) => {
     const doc = new jsPDF();
     doc.setFontSize(12);
-    endDate.setHours(23, 59, 59, 999);
-    const headers = [
-      "Date",
-      "Payee Name",
-      "Expense Type",
-      "Phone Number",
-      "Amount",
-    ];
 
-    const filteredData = expenseHistoryData.filter((entry) => {
-      const entryDate = new Date(entry.date);
-      return entryDate >= startDate && entryDate <= endDate;
+    const pageHeight = doc.internal.pageSize.height;
+    const margin = 10;
+    let currentY = 35;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999);
+
+    let filteredData = [];
+
+    if (selectedOption === "monthly") {
+      filteredData = expenseHistoryData.filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return (
+          expenseDate.getMonth() + 1 === selectedMonth &&
+          expenseDate.getFullYear() === selectedYear
+        );
+      });
+    } else if (selectedOption === "yearly") {
+      filteredData = expenseHistoryData.filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate.getFullYear() === selectedYear;
+      });
+    } else if (startDate && endDate) {
+      filteredData = expenseHistoryData.filter((expense) => {
+        const expenseDate = new Date(expense.date);
+        return expenseDate >= start && expenseDate <= end;
+      });
+    } else {
+      filteredData = expenseHistoryData;
+    }
+
+    let title;
+    if (selectedOption === "monthly") {
+      title = `Expense History for ${new Date(
+        selectedYear,
+        selectedMonth - 1
+      ).toLocaleString("default", { month: "long" })} ${selectedYear}`;
+    } else if (selectedOption === "yearly") {
+      title = `Expense History for ${selectedYear}`;
+    } else if (startDate && endDate) {
+      title = `Expense History from ${start.toLocaleDateString(
+        "en-IN"
+      )} to ${end.toLocaleDateString("en-IN")}`;
+    } else {
+      title = `Full Expense History`;
+    }
+
+    if (typeof title === "string") {
+      doc.text(title, 75, 10);
+    }
+
+    const headers = ["Date", "Expense Detail", "Amount"];
+    const columnCount = headers.length;
+    const columnWidth = (doc.internal.pageSize.width - 20) / columnCount; // 10 margin on each side
+
+    // Add headers to PDF with centered alignment
+    headers.forEach((header, index) => {
+      const xPosition = 10 + index * columnWidth;
+      const textWidth = doc.getTextWidth(header);
+      doc.text(header, xPosition + (columnWidth - textWidth) / 2, 25);
     });
 
-    doc.text("Expense History", 100, 10);
-    headers.forEach((header, index) => doc.text(header, 14 + index * 40, 25));
-
-    // Add a separator line
-    doc.line(10, 28, 200, 28);
+    doc.line(10, 30, doc.internal.pageSize.width - 10, 30);
 
     let totalExpense = 0;
 
-    filteredData.forEach((entry, index) => {
-      const row = [
-        new Date(entry.date).toLocaleDateString("en-GB"),
-        entry.payeeName,
-        entry.expenseType,
-        entry.contactNumber ? entry.contactNumber.toString() : "",
-        `${entry.totalExpense}`,
-      ];
+    filteredData.forEach((expense) => {
+      const expenseDate = new Date(expense.date).toLocaleDateString("en-IN");
+      const expenseDetail = expense.expenseDetail || "N/A"; // Default to 'N/A' if undefined
+      const totalAmount = parseFloat(expense.totalExpense) || 0; // Ensure it's a number
 
-      totalExpense += entry.totalExpense;
-      row.forEach((cell, cellIndex) => {
-        doc.text(cell.toString(), 14 + cellIndex * 40, 35 + index * 10);
+      totalExpense += totalAmount;
+
+      // Add each row with centered alignment
+      const rowData = [expenseDate, expenseDetail, totalAmount.toFixed(2)];
+      rowData.forEach((data, index) => {
+        const xPosition = 10 + index * columnWidth;
+        const textWidth = doc.getTextWidth(data);
+        doc.text(
+          data.toString(),
+          xPosition + (columnWidth - textWidth) / 2,
+          currentY
+        );
       });
+
+      currentY += 10;
+
+      // Check if content exceeds the page height
+      if (currentY > pageHeight - margin) {
+        doc.addPage();
+        currentY = margin;
+      }
     });
-    // Add total calculation at the end
-    const totalRowYPosition = 35 + filteredData.length * 10; // Updated position calculation
-    // Add a separator line
-    doc.line(10, totalRowYPosition, 200, totalRowYPosition); // Adjusted position for the line
 
-    // Position for total income
-    doc.text(`Total Expense:  ${totalExpense}`, 150, totalRowYPosition + 10);
+    if (currentY > pageHeight - margin) {
+      doc.addPage();
+      currentY = margin;
+    }
 
-    doc.save("expense_history.pdf");
-  };
+    // Draw a line above the total expense
+    const lineYPosition = currentY + 10; // Adjust this as needed
+    doc.line(
+      10,
+      lineYPosition,
+      doc.internal.pageSize.width - 10,
+      lineYPosition
+    );
 
-  const handleViewExpense = (entry) => {
-    setSelectedExpense(entry);
-    setIsModalOpen(true);
+    // Centering total expense at the bottom
+    const totalText = `Total Expense: ${totalExpense.toFixed(2)}`;
+    const totalTextWidth = doc.getTextWidth(totalText);
+    doc.text(
+      totalText,
+      140,
+      currentY + 20
+    );
+
+    // Save or download the PDF
+    doc.save("Expense_History.pdf");
   };
 
   // Filter entries based on search query
   const filteredEntries = expenseHistoryData
-  .filter((entry) => {
-    // Convert search query to lowercase
-    const lowerCaseQuery = searchQuery.toLowerCase();
+    .filter((entry) => {
+      // Convert search query to lowercase
+      const lowerCaseQuery = searchQuery.toLowerCase();
 
-    // Check if the entry matches the search query for date, expense type, or total expense
-    return (
-      new Date(entry.date).toLocaleDateString("en-GB").includes(lowerCaseQuery) ||
-      entry.expenseType.toLowerCase().includes(lowerCaseQuery) ||
-      entry.totalExpense.toString().includes(lowerCaseQuery)
-    );
-  })
-  .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date (latest first)
+      return (
+        new Date(entry.date)
+          .toLocaleDateString("en-GB")
+          .includes(lowerCaseQuery) ||
+        entry.expenseType.toLowerCase().includes(lowerCaseQuery) ||
+        entry.totalExpense.toString().includes(lowerCaseQuery)
+      );
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date (latest first)
 
   // Calculate entries to display
   const indexOfLastEntry = currentPage * entriesPerPage;
@@ -135,13 +213,6 @@ const Expense = () => {
             <h3 className="text-2xl font-bold text-[#ffeda5]">
               Expense History
             </h3>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name or phone"
-              className="bg-gray-700 text-gray-100 px-4 py-2 rounded-lg w-full lg:w-1/3"
-            />
           </div>
           <table className="w-full text-left">
             <thead>
@@ -171,9 +242,7 @@ const Expense = () => {
                     <td className="py-4">
                       {new Date(entry.date).toLocaleDateString("en-GB")}
                     </td>
-                    <td className="py-4">
-                     {entry.expenseDetail}
-                    </td>
+                    <td className="py-4">{entry.expenseDetail}</td>
                     <td className="py-4">
                       {new Intl.NumberFormat("en-IN", {
                         style: "currency",
@@ -217,8 +286,9 @@ const Expense = () => {
           )}
         </div>
 
-
-        {addExpenseModal && <AddExpense setAddExpenseModal={setAddExpenseModal}/> }
+        {addExpenseModal && (
+          <AddExpense setAddExpenseModal={setAddExpenseModal} />
+        )}
 
         {/* Modal for Viewing Expense */}
         <ExpenseModal
@@ -232,7 +302,7 @@ const Expense = () => {
           setIsModalOpen={setPdfModalOpen}
           customStartDate={customStartDate}
           customEndDate={customEndDate}
-          generatePDF={generatePDF}
+          generatePDF={generateDownPDF}
         />
       )}
     </div>
