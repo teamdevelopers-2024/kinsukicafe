@@ -10,7 +10,7 @@ import axios from "axios";
 // })
 
 const api = axios.create({
-  baseURL: "https://kinsukicafe-api.vercel.app/api", 
+  baseURL: "http://localhost:3001/api", 
   headers: {
     "Content-Type": "application/json",
   },
@@ -178,6 +178,17 @@ async function getHomeData() {
   }
 }
 
+
+async function getLatestIncome() {
+  try {
+    const response = await api.get("/getLatestIncome")
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -192,5 +203,6 @@ export default {
   getItems,
   addOrder,
   getOrders,
-  getHomeData
+  getHomeData,
+  getLatestIncome
 };
