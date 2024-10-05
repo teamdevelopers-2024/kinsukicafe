@@ -243,7 +243,7 @@ function IncomeChart({
             <select
               value={timePeriod}
               onChange={handleTimePeriodChange}
-              className="text-xs lg:text-sm cursor-pointer bg-gray-700 rounded-full text-cyan-500 outline-none"
+              className="text-xs lg:text-sm cursor-pointer bg-gray-700 rounded-full text-[#ffeda5] outline-none"
             >
               <option value="Daily">Daily</option>
               <option value="Monthly">Monthly</option>
