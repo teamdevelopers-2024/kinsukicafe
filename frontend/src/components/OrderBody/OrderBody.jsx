@@ -70,10 +70,10 @@ const OrderBody = () => {
     setViewOrderModal(true);
   };
 
-  const generatePDF = (order) => {
+const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
-    const footerHeight = 25; // Space needed for footer
+    const footerHeight = 30; // Space needed for footer
     const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
 
     const itemCount = order.orderDetails.length;
@@ -111,24 +111,26 @@ const OrderBody = () => {
 
     // Shop Information
     doc.setFontSize(8);
-    doc.text("Receipt", 30, 5); // Adjusted Y position for receipt title
-    doc.line(29.9, 6, 39.9, 6);
-    doc.addImage(logo, "PNG", 3, 5, 22, 13); // Position and size of the logo
-    doc.text("Kinsuki Cafe", 37, 9);
-    doc.text("Puthur Bypass Road", 33, 13);
-    doc.text("Kottakkal - 676503", 34.5, 17);
+    doc.text("RECEIPT OF SALE", 23, 5); // Adjusted Y position for receipt title
+    doc.line(22.9, 6, 47.9, 6);
+    doc.addImage(logo, "PNG", 25, 6.5, 22, 13); // Position and size of the logo
+    doc.text("Puthur Bypass Road, Kottakkal - 676503", 12, 22);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 19, 70, 19);
+    doc.line(5, 25, 70, 25);
     doc.setLineDash([]); // Reset to solid lines
-    doc.setFontSize(9);
-    doc.text(formattedOrderDate, 20, 25);
-    doc.text(formattedPrintTime, 40, 25);
+    doc.setFontSize(7);
+    doc.text("Bill No:", 5, 30);
+    doc.text(order.referenceNumber, 5, 34);
+    doc.text("Date : ", 47, 30);
+    doc.text("Time : ", 47, 34);
+    doc.text(formattedOrderDate, 55, 30);
+    doc.text(formattedPrintTime, 55, 34);
     doc.setFontSize(7);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 32, 70, 32);
+    doc.line(5, 36, 70, 36);
     doc.setLineDash([]);
 
-    let startY = 36; // Adjust starting Y position
+    let startY = 40; // Adjust starting Y position
 
     // Table headers
     doc.setFontSize(7);
@@ -139,8 +141,10 @@ const OrderBody = () => {
     doc.text("Total", 62, startY);
     doc.line(5, startY + 3, 70, startY + 3); // Header line
 
-    // Add items to the receipt
+    let totalQuantity = 0; // Initialize total quantity counter
+    let totalAmount = 0; // Initialize total amount counter
 
+    // Add items to the receipt
     order.orderDetails.forEach((detail, index) => {
       const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
       doc.text((index + 1).toString(), 5, yOffset); // Index number
@@ -150,23 +154,30 @@ const OrderBody = () => {
 
       const itemTotal = detail.quantity * detail.total; // Calculate total for this item
       doc.text(`${itemTotal.toFixed(2)}`, 62, yOffset); // Display total
+
+      totalQuantity += detail.quantity; // Update total quantity
+      totalAmount += itemTotal; // Update total amount
     });
 
     // Add a separator line after the items
     const itemsEndY =
       startY + 10 + Math.min(itemCount, maxVisibleItems) * itemHeight;
-    doc.line(5, itemsEndY, 70, itemsEndY);
+    doc.line(5, itemsEndY - 5, 70, itemsEndY - 5);
 
     // Calculate total position
-    const totalY = itemsEndY + 5;
+    const totalY = itemsEndY;
     doc.setFont("bold");
-    doc.text("Total:", 50, totalY);
-    doc.text(`${order.totalAmount.toFixed(2)}`, 60, totalY);
+    doc.text("Total Quantity: ", 5, totalY);
+    doc.text(totalQuantity.toString(), 21, totalY);
+
+    doc.text("Total Amount:", 50, totalY);
+    doc.text(`${totalAmount.toFixed(2)}`, 65, totalY);
 
     // Add Footer
     const footerY = totalY + 10;
     doc.setFont("normal");
     doc.text("Thank you!... Visit again...", 25, footerY);
+
     // Use output method to create Blob and open print dialog
     const pdfOutput = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfOutput);
@@ -318,12 +329,12 @@ const OrderBody = () => {
       doc.addPage();
       currentY = margin;
     }
-    doc.text(`Total Income: ${totalIncome.toFixed(2)}`, 10, currentY + 10);
+    doc.line(10 , currentY + 5, 200 , currentY + 5)
+    doc.text(`Total Income: ${totalIncome.toFixed(2)}`, 160, currentY + 15);
 
     // Save or download the PDF
     doc.save("Income_History.pdf");
   };
-
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
