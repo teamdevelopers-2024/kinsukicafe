@@ -36,42 +36,6 @@ function IncomeChart({
   const [totalIncome, setTotalIncome] = useState(0);
   const [periodIncome, setPeriodIncome] = useState(0);
 
-  // // Effect to calculate total income and period income
-  // useEffect(() => {
-  //   if (incomeHistoryData && incomeHistoryData.length > 0) {
-  //     const total = incomeHistoryData.reduce(
-  //       (acc, order) => acc + order.totalAmount,
-  //       0
-  //     );
-  //     setTotalIncome(total);
-
-  //     const calculatePeriodIncome = () => {
-  //       return incomeHistoryData.reduce((total, entry) => {
-  //         const date = new Date(entry.Date);
-  //         const isCurrentYear = date.getFullYear() === currentYear;
-
-  //         if (
-  //           timePeriod === "Monthly" &&
-  //           isCurrentYear &&
-  //           date.getMonth() === currentMonth
-  //         ) {
-  //           return total + entry.totalAmount;
-  //         } else if (timePeriod === "Daily") {
-  //           const today = new Date();
-  //           const dayDiff = Math.floor((today - date) / (1000 * 60 * 60 * 24));
-  //           return dayDiff >= 0 && dayDiff < 7
-  //             ? total + entry.totalAmount
-  //             : total;
-  //         } else if (timePeriod === "Yearly" && isCurrentYear) {
-  //           return total + entry.totalAmount;
-  //         }
-  //         return total;
-  //       }, 0);
-  //     };
-
-  //     setPeriodIncome(calculatePeriodIncome());
-  //   }
-  // }, [incomeHistoryData, timePeriod, currentMonth, currentYear]);
 
   useEffect(() => {
     if (incomeHistoryData && incomeHistoryData.length > 0) {
@@ -243,7 +207,7 @@ function IncomeChart({
             <select
               value={timePeriod}
               onChange={handleTimePeriodChange}
-              className="text-xs lg:text-sm cursor-pointer bg-gray-700 rounded-full text-cyan-500 outline-none"
+              className="text-xs lg:text-sm cursor-pointer bg-gray-700 rounded-full text-[#ffeda5] outline-none"
             >
               <option value="Daily">Daily</option>
               <option value="Monthly">Monthly</option>
