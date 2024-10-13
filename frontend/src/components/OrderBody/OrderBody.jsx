@@ -190,6 +190,8 @@ const generatePDF = (order) => {
         printWindow.close();
         URL.revokeObjectURL(pdfUrl); // Clean up the URL
       };
+      const flutterAppUrl = "myapp://print";
+      window.location.href = flutterAppUrl;
     };
   };
 
