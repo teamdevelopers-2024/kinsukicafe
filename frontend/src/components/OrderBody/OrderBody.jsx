@@ -182,7 +182,7 @@ const generatePDF = (order) => {
     const pdfOutput = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfOutput);
 
-    Open the PDF in a new window for printing
+    // Open the PDF in a new window for printing
     const printWindow = window.open(pdfUrl);
     printWindow.onload = () => {
       printWindow.print();
