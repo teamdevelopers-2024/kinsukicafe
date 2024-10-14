@@ -298,15 +298,28 @@ const OrderBody = () => {
 
     // Add items to the receipt
     order.orderDetails.forEach((detail, index) => {
-      const yOffset = startY + 10 + index * itemHeight; // Adjust for smaller height
+      const yOffset = startY + 10 + index * itemHeight; // Base position for each item
       doc.text((index + 1).toString(), 5, yOffset); // Index number
-      doc.text(detail.item, 15, yOffset);
+    
+      // Prepare to display the item text
+      const itemLines = [];
+      for (let i = 0; i < detail.item.length; i += 10) {
+        itemLines.push(detail.item.substring(i, i + 10)); // Split into chunks of 10
+      }
+    
+      // Draw each line of the item text
+      itemLines.forEach((line, lineIndex) => {
+        const itemOffsetY = yOffset + (lineIndex * 3); // Adjust Y position for each line (5 mm spacing)
+        doc.text(line, 15, itemOffsetY); 
+      });
+    
+      // Now handle quantity, price, and total
       doc.text(detail.quantity.toString(), 35, yOffset);
       doc.text(`${detail.total.toFixed(2)}`, 50, yOffset); // Price of the item
-
+    
       const itemTotal = detail.quantity * detail.total; // Calculate total for this item
       doc.text(`${itemTotal.toFixed(2)}`, 62, yOffset); // Display total
-
+    
       totalQuantity += detail.quantity; // Update total quantity
       totalAmount += itemTotal; // Update total amount
     });
