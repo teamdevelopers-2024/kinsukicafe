@@ -1,21 +1,21 @@
 import axios from "axios";
 
 
-const api = axios.create({
-  baseURL: "https://kinsukicafe-api.vercel.app/api", 
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-})
-
 // const api = axios.create({
-//   baseURL: "http://localhost:3001/api", 
+//   baseURL: "https://kinsukicafe-api.vercel.app/api", 
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
 //   withCredentials: true,
 // })
+
+const api = axios.create({
+  baseURL: "http://localhost:3001/api", 
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+})
 
 
 
@@ -199,6 +199,18 @@ async function updatePaymentMethod(body) {
   }
 }
 
+
+
+async function updateItem(body) {
+  try {
+    const response = await api.post("/updateItem",body)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -215,5 +227,6 @@ export default {
   getOrders,
   getHomeData,
   getLatestIncome,
-  updatePaymentMethod
+  updatePaymentMethod,
+  updateItem
 };

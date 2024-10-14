@@ -4,6 +4,8 @@ import searchIcon from "../../assets/searchIcon.svg";
 // import addCustomerIcon from "../../assets/addCustomerIcon.svg";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddItem from "../Add items/AddItem";
+import { FaEdit } from "react-icons/fa";
+import EditModal from "../editItem/EditItem";
 
 const ItemsBody = () => {
   const [showAddItem, setShowAddItem] = useState(false);
@@ -11,6 +13,8 @@ const ItemsBody = () => {
   const [items, setItems] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [editModal , setEditModal ] = useState(false)
+  const [editData , setEditData ] = useState({})
 
   const itemsPerPage = 10; // Number of items per page
 
@@ -28,7 +32,7 @@ const ItemsBody = () => {
       }
     };
     fetchItems();
-  }, [showAddItem]); // Dependencies
+  }, [showAddItem , editModal]); // Dependencies
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
@@ -41,6 +45,12 @@ const ItemsBody = () => {
       category.includes(searchTerm.toLowerCase())
     );
   });
+
+
+  const handleEditClick = (data) => {
+      setEditModal(true)
+      setEditData(data)
+  }
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * itemsPerPage,
@@ -84,6 +94,7 @@ const ItemsBody = () => {
                   <th className="px-4 py-2">Name</th>
                   <th className="px-4 py-2">Category</th>
                   <th className="px-4 py-2">Price</th>
+                  <th className="px-4 py-2">Action</th>
                 </tr>
               </thead>
               <tbody className="bg-gray-700">
@@ -99,6 +110,7 @@ const ItemsBody = () => {
                       <td className="px-4 py-2">{item.name}</td>
                       <td className="px-4 py-2">{item.category}</td>
                       <td className="px-4 py-2">{item.price}</td>
+                      <td className="px-4 py-2 text-blue-700 cursor-pointer" onClick={()=>handleEditClick(item)}><FaEdit/></td>
                     </tr>
                   ))
                 ) : (
@@ -139,6 +151,7 @@ const ItemsBody = () => {
 
         {/* Modals */}
         {showAddItem && <AddItem setAddItemModal={setShowAddItem} />}
+        <EditModal isOpen={editModal} onClose={()=> setEditModal(false)} item={editData} />
       </div>
     </>
   );

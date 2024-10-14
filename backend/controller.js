@@ -1,9 +1,8 @@
-import { response } from "express"
+
 import CategoryDb from "./model/CategoryDb.js"
 import ExpenseDb from "./model/ExpenseDb.js"
 import itemDb from "./model/ItemsDb.js"
 import orderDb from "./model/OrderDb.js"
-import mongoose from "mongoose"
 
 
 
@@ -306,6 +305,35 @@ async function updatePaymentMethod(req, res) {
 }
 
 
+async function updateItem(req, res) {
+    try {
+        const { id, price, name, category } = req.body; // Assuming the item ID is sent in the request body
+
+        // Validate input
+        if (!id || !price || !name || !category) {
+            return res.status(400).json({ error: true, message :"missing fiedl"});
+        }
+
+        // Find the item by ID and update it
+        const updatedItem = await itemDb.updateOne(
+            {_id:id},
+            {$set:{name:name , price:price , category:category}},
+        );
+
+        // If no item is found, return an error
+        if (!updatedItem) {
+            return res.status(404).json({ error: true , message : "item not updated"});
+        }
+
+        // Respond with the updated item
+        res.status(200).json({error:false,  message: 'Item updated successfully', item: updatedItem });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: true, message:"internel server error" });
+    }
+}
+
+
 
 export default {
     getCategory,
@@ -318,5 +346,6 @@ export default {
     addExpense,
     getHomeData,
     getLatestIncome,
-    updatePaymentMethod
+    updatePaymentMethod,
+    updateItem
 }

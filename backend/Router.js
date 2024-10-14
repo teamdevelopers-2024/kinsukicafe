@@ -15,7 +15,7 @@ router.post("/addCategory" ,controller.addCategory)
 router.post("/addItem",controller.addItem)
 router.post("/addOrder",controller.addOrder)
 router.post("/addExpense",controller.addExpense)
-
+router.post("/updateItem",controller.updateItem)
 
 
 
