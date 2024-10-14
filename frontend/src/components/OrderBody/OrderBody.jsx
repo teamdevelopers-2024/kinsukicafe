@@ -219,7 +219,7 @@ const OrderBody = () => {
     const width = 75;
     const itemHeight = 8; // Height for each item
     const footerHeight = 130; // Space needed for footer
-    const pageHeight = 150; // Total height of the page
+    // const pageHeight = 150; // Total height of the page
 
     const itemCount = order.orderDetails.length;
 
@@ -256,7 +256,7 @@ const OrderBody = () => {
     // Shop Information
     doc.setFontSize(9);
     doc.text("RECEIPT OF SALE", 23, 5);
-    doc.line(22.9, 6, 47.9, 6);
+    doc.line(22.9, 6, 50.9, 6);
     doc.addImage(logo, "PNG", 18, 6.5, 35, 20);
     doc.text("Puthur Bypass Road, Kottakkal - 676503", 9, 27);
     doc.text("+91 9876 543 210", 23, 32);
@@ -278,10 +278,10 @@ const OrderBody = () => {
     let startY = 51; // Adjust starting Y position
 
     // Table headers
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.text("No", 5, startY);
     doc.text("Item", 15, startY);
-    doc.text("Qty", 35, startY);
+    doc.text("Qty", 40, startY);
     doc.text("Price", 50, startY);
     doc.text("Total", 62, startY);
     doc.line(5, startY + 3, 70, startY + 3);
@@ -292,6 +292,7 @@ const OrderBody = () => {
     // Add items to the receipt
     order.orderDetails.forEach((detail, index) => {
       const yOffset = startY + 10 + index * itemHeight;
+      doc.setFontSize(9);
       doc.text((index + 1).toString(), 5, yOffset);
 
       const itemLines = [];
@@ -303,8 +304,8 @@ const OrderBody = () => {
         const itemOffsetY = yOffset + lineIndex * 3; // Adjust line spacing as needed
         doc.text(line, 15, itemOffsetY);
       });
-
-      doc.text(detail.quantity.toString(), 35, yOffset);
+      doc.setFontSize(9);
+      doc.text(detail.quantity.toString(), 40, yOffset);
       doc.text(`${detail.total.toFixed(2)}`, 50, yOffset);
 
       const itemTotal = detail.quantity * detail.total;
@@ -316,23 +317,24 @@ const OrderBody = () => {
 
     // Add a separator line after the items
     const itemsEndY = startY + 10 + Math.min(itemCount) * itemHeight; // Position after last item
-    doc.line(5, itemsEndY - 4, 70, itemsEndY - 4);
+    doc.line(5, itemsEndY - 2, 70, itemsEndY - 2);
 
     // Calculate total position
     const totalY = itemsEndY; // Set the Y position for totals
     doc.setFontSize(10);
-    doc.setFont("Helvetica", "normal");
-    doc.text("Total Quantity : ", 5, totalY + 2); // Total Quantity label
-    doc.text(totalQuantity.toString(), 29, totalY + 2); // Total Quantity value
-    doc.setFontSize(10);
-    doc.text("Total Amount :", 37, totalY + 2); // Total Amount label
-    doc.text(`${totalAmount.toFixed(2)}`, 61, totalY + 2); // Total Amount value
+    doc.text(`Total Quantity : ${totalQuantity.toString()}`, 5, totalY + 3); // Total Quantity label
+    doc.setFontSize(14);
+    doc.setFont("Helvetica", "bold");
+
+    doc.text(`Total Amount : ${totalAmount.toFixed(2)}`, 13, totalY + 11); // Total Amount label
 
     // Adjust footer position dynamically
-    const footerY = totalY + 10; // Add a little space after totals for footer
-    doc.addImage(QR, "PNG", 14, footerY, 50, 50); // QR code positioning
+    const footerY = totalY + 15;
+    doc.setFontSize(10);
+    doc.text("Scan and Pay here...", 20, footerY + 5); // Add a little space after totals for footer
+    doc.addImage(QR, "PNG", 14, footerY + 6, 50, 50); // QR code positioning
     doc.setFont("normal");
-    doc.text("Thank you!... Visit again...", 20, footerY + 55);
+    doc.text("Thank you!... Visit again...", 19, footerY + 65);
 
     const pdfOutput = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfOutput);
