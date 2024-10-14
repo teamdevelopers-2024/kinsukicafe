@@ -189,6 +189,16 @@ async function getLatestIncome() {
   }
 }
 
+async function updatePaymentMethod(body) {
+  try {
+    const response = await api.put(`/updatepaymentmethod`,body)
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
 // Exporting functions
 export default {
   login,
@@ -204,5 +214,6 @@ export default {
   addOrder,
   getOrders,
   getHomeData,
-  getLatestIncome
+  getLatestIncome,
+  updatePaymentMethod
 };

@@ -20,6 +20,12 @@ router.post("/addExpense",controller.addExpense)
 
 
 
+router.put("/updatepaymentmethod",controller.updatePaymentMethod)
+
+
+
+
+
 
 
 

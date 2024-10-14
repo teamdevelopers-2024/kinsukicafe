@@ -46,6 +46,10 @@ const orderSchema = new mongoose.Schema({
         type: String,
         unique: true,
     },
+    paymentMethod:{
+        type: String,
+        default: "Pending"
+    }
 });
 
 // Pre-save hook to generate unique reference number

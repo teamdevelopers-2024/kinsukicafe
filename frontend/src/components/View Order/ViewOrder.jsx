@@ -31,6 +31,12 @@ const ViewOrder = ({ entry = { orderDetails: [] }, onClose }) => {
                 ₹ {parseFloat(entry.totalAmount).toLocaleString()}
               </p>
             </div>
+            <div>
+              <span className="text-[#ffeda5] block">Payment Method</span>
+              <p className="text-gray-300">
+                {entry.paymentMethod}
+              </p>
+            </div>
           </div>
 
           {/* Work Descriptions */}
@@ -70,7 +76,7 @@ const ViewOrder = ({ entry = { orderDetails: [] }, onClose }) => {
                     <td className="text-center">{index + 1}</td>
                     <td className="text-center">{order.item}</td>
                     <td className="text-center">
-                      ₹ {parseFloat(order.quantity).toLocaleString()}
+                      {order.quantity}
                     </td>
                     <td className="text-center">
                       ₹ {parseFloat(order.total).toLocaleString()}{" "}

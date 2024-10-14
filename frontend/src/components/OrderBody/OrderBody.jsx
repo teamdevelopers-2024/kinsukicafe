@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FaChevronLeft, FaChevronRight, FaFilePdf } from "react-icons/fa";
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaEdit,
+  FaEye,
+  FaFilePdf,
+  FaPrint,
+} from "react-icons/fa";
 import jsPDF from "jspdf";
 import api from "../../services/api";
 import IncomeChart from "../Income Chart/IncomeChart";
@@ -20,26 +27,55 @@ const OrderBody = () => {
   const [addOrderModal, setAddOrderModal] = useState(false);
   const entriesPerPage = 5;
 
-  useEffect(() => {
-    const fetchIncomeHistory = async () => {
-      setIsLoading(true); // Set loading to true
-      try {
-        const response = await api.getOrders();
-        if (!response.error) {
-          setIncomeHistoryData(response.data);
-        } else {
-          swal("!error", "error fetching data", "error");
-        }
-      } catch (error) {
-        console.error("Error fetching income history data", error);
-      } finally {
-        setIsLoading(false); // Set loading to false
+ 
+
+
+
+  
+  const fetchIncomeHistory = async () => {
+    setIsLoading(true); // Set loading to true
+    try {
+      const response = await api.getOrders();
+      if (!response.error) {
+        setIncomeHistoryData(response.data);
+      } else {
+        swal("!error", "error fetching data", "error");
       }
-    };
+    } catch (error) {
+      console.error("Error fetching income history data", error);
+    } finally {
+      setIsLoading(false); // Set loading to false
+    }
+  };
+
+
+  const handlePaymentMethodChange = async (status, referenceNumber) => {
+    try {
+      setIsLoading(true);
+      const response = await api.updatePaymentMethod({
+        referenceNumber,
+        paymentMethod: status, // Change 'status' to 'paymentMethod'
+      });
+      if (!response.error) {
+        // Optionally update local state or refetch data here
+        fetchIncomeHistory()
+        swal("Success", "Payment method updated!", "success");
+      } else {
+        swal("Error", "Could not update payment method.", "error");
+      }
+    } catch (error) {
+      console.error("Error updating payment method", error);
+      swal("Error", "Could not update payment method.", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (!addOrderModal) {
       fetchIncomeHistory();
     }
-  }, [addOrderModal]);
+  }, [addOrderModal ]);
 
   const filteredEntries = () => {
     let filteredData = incomeHistoryData;
@@ -296,15 +332,18 @@ const OrderBody = () => {
     const pdfOutput = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfOutput);
 
-    // Open the PDF in a new window for printing
-    const printWindow = window.open(pdfUrl);
-    printWindow.onload = () => {
-      printWindow.print();
-      printWindow.onafterprint = () => {
-        printWindow.close();
-        URL.revokeObjectURL(pdfUrl); // Clean up the URL
-      };
-    };
+    // // Open the PDF in a new window for printing
+    // const printWindow = window.open(pdfUrl);
+    // printWindow.onload = () => {
+    //   printWindow.print();
+    //   printWindow.onafterprint = () => {
+    //     printWindow.close();
+    //     URL.revokeObjectURL(pdfUrl); // Clean up the URL
+    //   };
+    // };
+
+    const flutterAppUrl = "myapp://print"; // Replace with your actual URL scheme
+    window.location.href = flutterAppUrl;
   };
 
   const generateDownPDF = (
@@ -443,7 +482,7 @@ const OrderBody = () => {
       doc.addPage();
       currentY = margin;
     }
-    doc.line(10 , currentY + 5, 200 , currentY + 5)
+    doc.line(10, currentY + 5, 200, currentY + 5);
     doc.text(`Total Income: ${totalIncome.toFixed(2)}`, 160, currentY + 15);
 
     // Save or download the PDF
@@ -480,7 +519,8 @@ const OrderBody = () => {
               <tr className="text-gray-500">
                 <th className="pb-2">Date</th>
                 <th className="pb-2">Reference</th>
-                <th className="pb-2">Total Amount</th>
+                <th className="pb-2">Amount</th>
+                <th className="pb-2">Payment Method</th>
                 <th className="pb-2">Action</th>
                 <th className="pb-2">Print</th>
               </tr>
@@ -500,20 +540,32 @@ const OrderBody = () => {
                     </td>
                     <td className="py-2">{entry.referenceNumber}</td>
                     <td className="py-2">{entry.totalAmount}</td>
+                    {/* <td className="py-2">{entry.paymentMethod}</td> */}
+                    <td className="py-2">
+                      <select
+                        value={entry.paymentMethod}
+                        onChange={(e) => handlePaymentMethodChange(e.target.value,entry.referenceNumber)}
+                        className="bg-gray-700 text-gray-100 rounded-md"
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Cash">Cash</option>
+                        <option value="UPI">UPI</option>
+                      </select>
+                    </td>
                     <td className="py-2">
                       <button
                         onClick={() => handleViewClick(entry)}
                         className="text-[#ffeda5]"
                       >
-                        View
+                        <FaEye />
                       </button>
                     </td>
                     <td className="py-2">
                       <button
                         onClick={() => generatePDF(entry)}
-                        className="text-[#ffeda5]"
+                        className="text-[#ffeda5] flex"
                       >
-                        Print
+                        <FaPrint />
                       </button>
                     </td>
                   </tr>
