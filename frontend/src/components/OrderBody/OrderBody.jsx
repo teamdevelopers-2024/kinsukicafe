@@ -15,6 +15,7 @@ import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddOrder from "../Add Order/AddOrder";
 import logo from "../../assets/logoPDF.png";
 import ViewOrder from "../View Order/ViewOrder";
+import QR from '../../assets/qr.jpg'
 
 const OrderBody = () => {
   const [incomeHistoryData, setIncomeHistoryData] = useState([]);
@@ -223,7 +224,7 @@ const OrderBody = () => {
   const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
-    const footerHeight = 30; // Space needed for footer
+    const footerHeight = 90; // Space needed for footer
     const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
 
     const itemCount = order.orderDetails.length;
@@ -260,30 +261,31 @@ const OrderBody = () => {
     ).padStart(2, "0")} ${printDate.getHours() >= 12 ? "PM" : "AM"}`;
 
     // Shop Information
-    doc.setFontSize(8);
+    doc.setFontSize(9);
     doc.text("RECEIPT OF SALE", 23, 5); // Adjusted Y position for receipt title
     doc.line(22.9, 6, 47.9, 6);
-    doc.addImage(logo, "PNG", 25, 6.5, 22, 13); // Position and size of the logo
-    doc.text("Puthur Bypass Road, Kottakkal - 676503", 12, 22);
+    doc.addImage(logo, "PNG", 18, 6.5, 35, 20); // Position and size of the logo
+    doc.text("Puthur Bypass Road, Kottakkal - 676503", 9, 27);
+    doc.text("+91 9876 543 210", 23, 32);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 25, 70, 25);
+    doc.line(5, 35, 70, 35);
     doc.setLineDash([]); // Reset to solid lines
-    doc.setFontSize(7);
-    doc.text("Bill No:", 5, 30);
-    doc.text(order.referenceNumber, 5, 34);
-    doc.text("Date : ", 47, 30);
-    doc.text("Time : ", 47, 34);
-    doc.text(formattedOrderDate, 55, 30);
-    doc.text(formattedPrintTime, 55, 34);
-    doc.setFontSize(7);
+    doc.setFontSize(8);
+    doc.text("Bill No:", 5, 40);
+    doc.text(order.referenceNumber, 5, 44);
+    doc.text("Date : ", 45, 40);
+    doc.text("Time : ", 45, 44);
+    doc.text(formattedOrderDate, 53, 40);
+    doc.text(formattedPrintTime, 53, 44);
+    doc.setFontSize(8);
     doc.setLineDash([1, 1], 0); // Dotted line pattern
-    doc.line(5, 36, 70, 36);
+    doc.line(5, 47, 70, 47);
     doc.setLineDash([]);
 
-    let startY = 40; // Adjust starting Y position
+    let startY = 51; // Adjust starting Y position
 
     // Table headers
-    doc.setFontSize(7);
+    doc.setFontSize(8);
     doc.text("No", 5, startY); // Index Number Header
     doc.text("Item", 15, startY);
     doc.text("Qty", 35, startY);
@@ -316,17 +318,21 @@ const OrderBody = () => {
 
     // Calculate total position
     const totalY = itemsEndY;
-    doc.setFont("bold");
-    doc.text("Total Quantity: ", 5, totalY);
-    doc.text(totalQuantity.toString(), 21, totalY);
-
-    doc.text("Total Amount:", 50, totalY);
-    doc.text(`${totalAmount.toFixed(2)}`, 65, totalY);
+    doc.setFontSize(10);
+    doc.setFont("Helvetica","normal");
+    doc.text("Total Quantity : ", 5, totalY + 2);
+    doc.text(totalQuantity.toString(), 29, totalY + 2);
+    doc.setFontSize(10);
+    doc.text("Total Amount :", 37, totalY + 2);
+    doc.text(`${totalAmount.toFixed(2)}`, 61, totalY + 2);
 
     // Add Footer
-    const footerY = totalY + 10;
+    const footerY = totalY + 5;
+    doc.addImage(QR, "PNG", 18, footerY, 40, 40);
     doc.setFont("normal");
-    doc.text("Thank you!... Visit again...", 25, footerY);
+    doc.text("Thank you!... Visit again...", 20, footerY + 47);
+    doc.text("       ", 20, footerY + 50);
+    doc.text("       ", 20, footerY + 53);
 
     // Use output method to create Blob and open print dialog
     const pdfOutput = doc.output("blob");
@@ -356,7 +362,7 @@ const OrderBody = () => {
     const doc = new jsPDF();
     doc.setFontSize(12);
 
-    // Page height (A4 size in jsPDF: 297mm height or roughly 290 usable)
+    // Page height (A4 size in jsPDF: 287mm height or roughly 290 usable)
     const pageHeight = doc.internal.pageSize.height;
     const margin = 10;
     let currentY = 35; // Initial Y position for table rows
