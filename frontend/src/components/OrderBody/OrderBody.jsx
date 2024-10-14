@@ -280,8 +280,8 @@ const OrderBody = () => {
     // Table headers
     doc.setFontSize(9);
     doc.text("No", 5, startY);
-    doc.text("Item", 15, startY);
-    doc.text("Qty", 40, startY);
+    doc.text("Item", 11.5, startY);
+    doc.text("Qty", 41, startY);
     doc.text("Price", 50, startY);
     doc.text("Total", 62, startY);
     doc.line(5, startY + 3, 70, startY + 3);
@@ -302,10 +302,10 @@ const OrderBody = () => {
 
       itemLines.forEach((line, lineIndex) => {
         const itemOffsetY = yOffset + lineIndex * 3; // Adjust line spacing as needed
-        doc.text(line, 15, itemOffsetY);
+        doc.text(line, 11.5, itemOffsetY);
       });
       doc.setFontSize(9);
-      doc.text(detail.quantity.toString(), 40, yOffset);
+      doc.text(detail.quantity.toString(), 42.5, yOffset);
       doc.text(`${detail.total.toFixed(2)}`, 50, yOffset);
 
       const itemTotal = detail.quantity * detail.total;
