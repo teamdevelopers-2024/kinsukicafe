@@ -37,7 +37,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Navigation Links */}
-          <ul className="flex md:space-x-8 sm:space-x-2 space-x-3 text-gray-300">
+          <ul className="flex md:space-x-8 sm:space-x-5 sm:text-xs text-xs space-x-5 text-gray-300">
             <li>
               <a
                 onClick={() => navigate('/home')}
