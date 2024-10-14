@@ -332,18 +332,18 @@ const OrderBody = () => {
     const pdfOutput = doc.output("blob");
     const pdfUrl = URL.createObjectURL(pdfOutput);
 
-    // // Open the PDF in a new window for printing
-    // const printWindow = window.open(pdfUrl);
-    // printWindow.onload = () => {
-    //   printWindow.print();
-    //   printWindow.onafterprint = () => {
-    //     printWindow.close();
-    //     URL.revokeObjectURL(pdfUrl); // Clean up the URL
-    //   };
-    // };
+    // Open the PDF in a new window for printing
+    const printWindow = window.open(pdfUrl);
+    printWindow.onload = () => {
+      printWindow.print();
+      printWindow.onafterprint = () => {
+        printWindow.close();
+        URL.revokeObjectURL(pdfUrl); 
+      };
+    };
 
-    const flutterAppUrl = "myapp://print"; // Replace with your actual URL scheme
-    window.location.href = flutterAppUrl;
+    // const flutterAppUrl = "myapp://print"; // Replace with your actual URL scheme
+    // window.location.href = flutterAppUrl;
   };
 
   const generateDownPDF = (
