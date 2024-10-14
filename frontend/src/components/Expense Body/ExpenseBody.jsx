@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
-import ExpenseModal from "../View Expense/ExpenseModal";
 import ExpenseChart from "../Expense Chart/ExpenseChart";
 import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import jsPDF from "jspdf";
@@ -280,11 +279,7 @@ const Expense = () => {
           <AddExpense setAddExpenseModal={setAddExpenseModal} />
         )}
 
-        <ExpenseModal
-          isOpen={isModalOpen}
-          expense={selectedExpense}
-          onClose={() => setIsModalOpen(false)}
-        />
+      
       </main>
       {pdfModalOpen && (
         <PDFDownloadModal
