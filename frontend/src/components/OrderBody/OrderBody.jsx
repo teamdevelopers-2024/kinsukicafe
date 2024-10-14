@@ -224,7 +224,7 @@ const OrderBody = () => {
   const generatePDF = (order) => {
     const width = 75;
     const itemHeight = 8; // Height for each item
-    const footerHeight = 90; // Space needed for footer
+    const footerHeight = 130; // Space needed for footer
     const maxVisibleItems = Math.floor((150 - footerHeight) / itemHeight); // Calculate max visible items based on 150mm height
 
     const itemCount = order.orderDetails.length;
@@ -328,11 +328,16 @@ const OrderBody = () => {
 
     // Add Footer
     const footerY = totalY + 5;
-    doc.addImage(QR, "PNG", 18, footerY, 40, 40);
+    doc.addImage(QR, "PNG", 14, footerY, 50, 50);
     doc.setFont("normal");
-    doc.text("Thank you!... Visit again...", 20, footerY + 47);
-    doc.text("       ", 20, footerY + 50);
-    doc.text("       ", 20, footerY + 53);
+    doc.text("Thank you!... Visit again...", 20, footerY + 55);
+    doc.text("       ", 20, footerY + 55);
+    doc.text("       ", 20, footerY + 60);
+    doc.text("       ", 20, footerY + 63);
+    doc.text("       ", 20, footerY + 68);
+    doc.text("       ", 20, footerY + 72);
+    doc.text("       ", 20, footerY + 75);
+    doc.text(".......", 30, footerY + 78);
 
     // Use output method to create Blob and open print dialog
     const pdfOutput = doc.output("blob");
