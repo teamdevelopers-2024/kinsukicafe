@@ -6,7 +6,9 @@ import {
   FaEye,
   FaFilePdf,
   FaPrint,
+  FaTrash,
 } from "react-icons/fa";
+import Swal from "sweetalert2";
 import jsPDF from "jspdf";
 import api from "../../services/api";
 import IncomeChart from "../Income Chart/IncomeChart";
@@ -27,6 +29,7 @@ const OrderBody = () => {
   const [isLoading, setIsLoading] = useState(true); // Loading state
   const [addOrderModal, setAddOrderModal] = useState(false);
   const entriesPerPage = 5;
+  const [isUpdated , setIsUpdated ] = useState(false)
 
   const fetchIncomeHistory = async () => {
     setIsLoading(true); // Set loading to true
@@ -70,7 +73,7 @@ const OrderBody = () => {
     if (!addOrderModal) {
       fetchIncomeHistory();
     }
-  }, [addOrderModal]);
+  }, [addOrderModal , isUpdated]);
 
   const filteredEntries = () => {
     let filteredData = incomeHistoryData;
@@ -259,7 +262,7 @@ const OrderBody = () => {
     doc.line(22.9, 6, 50.9, 6);
     doc.addImage(logo, "PNG", 18, 6.5, 35, 20);
     doc.text("Puthur Bypass Road, Kottakkal - 676503", 9, 27);
-    doc.text("+91 9876 543 210", 23, 32);
+    doc.text("+91 7994 568 370", 23, 32);
     doc.setLineDash([1, 1], 0);
     doc.line(5, 35, 70, 35);
     doc.setLineDash([]);
@@ -296,8 +299,8 @@ const OrderBody = () => {
       doc.text((index + 1).toString(), 5, yOffset);
 
       const itemLines = [];
-      for (let i = 0; i < detail.item.length; i += 10) {
-        itemLines.push(detail.item.substring(i, i + 10));
+      for (let i = 0; i < detail.item.length; i += 15) {
+        itemLines.push(detail.item.substring(i, i + 15));
       }
 
       itemLines.forEach((line, lineIndex) => {
@@ -634,6 +637,43 @@ const OrderBody = () => {
     doc.save(fileName);
   };
 
+
+  const handleDelete = async (entryId) => {
+    const { value: password } = await Swal.fire({
+        title: 'Confirm Deletion',
+        input: 'password',
+        inputLabel: 'Please enter your password',
+        inputPlaceholder: 'Password',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to enter a password!';
+            }
+            if (value !== '1234') {
+                return 'Incorrect Password';
+            }
+        }
+    });
+
+    if (password === '1234') {
+        try {
+            // Send DELETE request with ID as a query parameter
+            const result = await api.deleteOrder(entryId)
+            if(result.error){
+              Swal.fire('Error', 'There was an error deleting the expense.', 'error')
+            }else {
+              setIsUpdated(!isUpdated)
+              Swal.fire('Deleted!', 'Your expense has been deleted.', 'success')
+            }
+        } catch (error) {
+            console.error('Error deleting expense:', error);
+            Swal.fire('Error', 'There was an error deleting the expense.', 'error');
+        }
+    }
+};
+
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
@@ -702,12 +742,18 @@ const OrderBody = () => {
                         <option value="UPI">UPI</option>
                       </select>
                     </td>
-                    <td className="py-2">
+                    <td className="py-2 flex gap-3">
                       <button
                         onClick={() => handleViewClick(entry)}
                         className="text-[#ffeda5]"
                       >
                         <FaEye />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(entry._id)}
+                        className="text-[#ffeda5]"
+                      >
+                        <FaTrash className="text-red-600" />
                       </button>
                     </td>
                     <td className="py-2">

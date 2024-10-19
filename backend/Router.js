@@ -9,6 +9,8 @@ router.get("/getOrders",controller.getOrders)
 router.get("/getExpenses", controller.getExpense)
 router.get("/getHomeData",controller.getHomeData)
 router.get("/getLatestIncome",controller.getLatestIncome)
+router.post('/login',controller.login)
+
 
 
 router.post("/addCategory" ,controller.addCategory)
@@ -21,9 +23,13 @@ router.post("/updateItem",controller.updateItem)
 
 
 router.put("/updatepaymentmethod",controller.updatePaymentMethod)
+router.put("/updateExpense",controller.updateExpense)
+router.put("/updateCategory",controller.updateCategory)
 
-
-
+router.delete('/deleteExpense',controller.deleteExpense)
+router.delete('/deleteOrder',controller.deleteOrder)
+router.delete("/deleteItem",controller.deleteItem)
+router.delete("/deleteCategory",controller.deleteCategory)
 
 
 

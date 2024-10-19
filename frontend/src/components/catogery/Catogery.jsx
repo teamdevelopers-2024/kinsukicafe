@@ -3,6 +3,8 @@ import api from "../../services/api";
 import AddCategory from "../Add Category/AddCategory";
 import CategoryModal from "../Category Modal/CategoryModal";
 import searchIcon from "../../assets/searchIcon.svg";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 function CatogeryBody() {
   const [categories, setCategories] = useState([]);
@@ -12,6 +14,7 @@ function CatogeryBody() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const [isUpdated, setIsUpdated ] = useState(false)
   const handleViewClick = (category) => {
     setSelectedCategory(category);
     setModalOpen(true);
@@ -35,11 +38,109 @@ function CatogeryBody() {
       }
     };
     fetchData();
-  }, [addCategory]);
+  }, [addCategory ,isUpdated]);
 
   const filteredCategories = categories.filter((cat) =>
     cat.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+
+  const handleDelete = async (entryId) => {
+    const { value: password } = await Swal.fire({
+        title: 'Confirm Deletion',
+        input: 'password',
+        inputLabel: 'Please enter your password',
+        inputPlaceholder: 'Password',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to enter a password!';
+            }
+            if (value !== '1234') {
+                return 'Incorrect Password';
+            }
+        }
+    });
+
+    if (password === '1234') {
+        try {
+            // Send DELETE request with ID as a query parameter
+            const result = await api.deleteCategory(entryId)
+            if(result.error){
+              Swal.fire('Error', 'There was an error deleting the Category.', 'error')
+            }else {
+              setIsUpdated(!isUpdated)
+              Swal.fire('Deleted!', 'Your Category has been deleted.', 'success')
+            }
+        } catch (error) {
+            console.error('Error deleting Category:', error);
+            Swal.fire('Error', 'There was an error deleting the Category.', 'error');
+        }
+    }
+};
+
+
+const handleUpdate = async (entry) => {
+  const { value: password } = await Swal.fire({
+    title: 'Confirm Update',
+    input: 'password',
+    inputLabel: 'Please enter your password',
+    inputPlaceholder: 'Password',
+    showCancelButton: true,
+    confirmButtonText: 'Continue',
+    cancelButtonText: 'Cancel',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'You need to enter a password!';
+      }
+      if (value !== '1234') { // Replace with your actual password verification logic
+        return 'Incorrect Password!';
+      }
+    }
+  });
+
+  // Only proceed if the password is correct
+  if (password === '1234') {
+    // Show the update modal for further edits
+    const { value: name } = await Swal.fire({
+      title: 'Update Category',
+      html: `
+        <div style="margin-bottom: 10px;">
+          <label for="name" style="display: block; margin-bottom: 2px; font-weight: bold;">Category Name:</label>
+          <input id="name" type="text" class="swal2-input" style="width: 250px; height: 36px; padding: 8px; box-sizing: border-box;" value="${entry.name}">
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      cancelButtonText: 'Cancel',
+      preConfirm: () => {
+        return {
+          name: document.getElementById('name').value,
+        };
+      }
+    });
+    
+
+    // Check if the user confirmed the update
+    if (name) {
+      try {
+        const result = await api.updateCategory(entry._id, name); 
+        if(!result.error){
+          setIsUpdated(!isUpdated)
+          Swal.fire('Updated!', 'Your Category has been updated.', 'success');
+        }else{
+          Swal.fire('Error', 'There was an error updating the Category.', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error', 'There was an error updating the Category.', 'error');
+        console.error('Error updating expense:', error);
+      }
+    }
+  }
+};
 
   return (
     <>
@@ -75,6 +176,7 @@ function CatogeryBody() {
                 <th className="px-4 py-2">Category Name</th>
                 <th className="px-4 py-2">Total Items</th>
                 <th className="px-4 py-2">View</th>
+                <th className="px-4 py-2">Action</th>
               </tr>
             </thead>
             <tbody className="bg-gray-700">
@@ -90,6 +192,10 @@ function CatogeryBody() {
                     >
                       View
                     </button>
+                  </td>
+                  <td className="px-4 py-2 flex gap-3">
+                    <FaTrash onClick={()=> handleDelete(cat._id)} className="text-red-600 cursor-pointer"/>
+                    <FaEdit onClick={()=> handleUpdate(cat)} className="text-blue-700 cursor-pointer"/>
                   </td>
                 </tr>
               ))}

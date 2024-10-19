@@ -5,6 +5,8 @@ import PDFDownloadModal from "../PDFDownloadModal/PDFDownloadModal";
 import jsPDF from "jspdf";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddExpense from "../Add Expense/AddExpense";
+import Swal from "sweetalert2";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 const Expense = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -18,6 +20,7 @@ const Expense = () => {
   const [loading, setLoading] = useState(false);
   const [addExpenseModal, setAddExpenseModal] = useState(false);
   const entriesPerPage = 5;
+  const [isUpdated, setIsUpdated]= useState(false)
 
   useEffect(() => {
     const fetchExpenseHistory = async () => {
@@ -41,7 +44,7 @@ const Expense = () => {
     if (!addExpenseModal) {
       fetchExpenseHistory();
     }
-  }, [addExpenseModal]);
+  }, [addExpenseModal ,isUpdated]);
 
   const generateDownPDF = (
     startDate,
@@ -188,6 +191,122 @@ const Expense = () => {
   );
   const pageCount = Math.ceil(filteredEntries.length / entriesPerPage);
 
+
+  const handleDelete = async (entryId) => {
+    const { value: password } = await Swal.fire({
+        title: 'Confirm Deletion',
+        input: 'password',
+        inputLabel: 'Please enter your password',
+        inputPlaceholder: 'Password',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to enter a password!';
+            }
+            if (value !== '1234') {
+                return 'Incorrect Password';
+            }
+        }
+    });
+
+    if (password === '1234') {
+        try {
+            // Send DELETE request with ID as a query parameter
+            const result = await api.deleteExpense(entryId)
+            if(result.error){
+              Swal.fire('Error', 'There was an error deleting the expense.', 'error')
+            }else {
+              setIsUpdated(!isUpdated)
+              Swal.fire('Deleted!', 'Your expense has been deleted.', 'success')
+            }
+        } catch (error) {
+            console.error('Error deleting expense:', error);
+            Swal.fire('Error', 'There was an error deleting the expense.', 'error');
+        }
+    }
+};
+
+
+const handleUpdate = async (entry) => {
+  const { value: password } = await Swal.fire({
+    title: 'Confirm Update',
+    input: 'password',
+    inputLabel: 'Please enter your password',
+    inputPlaceholder: 'Password',
+    showCancelButton: true,
+    confirmButtonText: 'Continue',
+    cancelButtonText: 'Cancel',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'You need to enter a password!';
+      }
+      if (value !== '1234') { // Replace with your actual password verification logic
+        return 'Incorrect Password!';
+      }
+    }
+  });
+
+  // Only proceed if the password is correct
+  if (password === '1234') {
+    // Show the update modal for further edits
+    const { value: formValues } = await Swal.fire({
+      title: 'Update Expense',
+      html: `
+        <div style="margin-bottom: 10px;">
+          <label for="expenseDate" style="display: block; margin-bottom: 2px; font-weight: bold;">Date:</label>
+          <input id="expenseDate" type="date" class="swal2-input" style="width: 250px; height: 36px; padding: 8px; box-sizing: border-box;" value="${new Date(entry.date).toISOString().split('T')[0]}">
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="expenseDetail" style="display: block; margin-bottom: 2px; font-weight: bold;">Expense Detail:</label>
+          <input id="expenseDetail" class="swal2-input" placeholder="Expense Detail" style="width: 250px; height: 36px; padding: 8px; box-sizing: border-box;" value="${entry.expenseDetail}">
+        </div>
+        <div style="margin-bottom: 10px;">
+          <label for="totalExpense" style="display: block; margin-bottom: 2px; font-weight: bold;">Total Expense:</label>
+          <input id="totalExpense" class="swal2-input" placeholder="Total Expense" style="width: 250px; height: 36px; padding: 8px; box-sizing: border-box;" value="${entry.totalExpense}">
+        </div>
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      cancelButtonText: 'Cancel',
+      preConfirm: () => {
+        return {
+          date: document.getElementById('expenseDate').value,
+          expenseDetail: document.getElementById('expenseDetail').value,
+          totalExpense: document.getElementById('totalExpense').value
+        };
+      }
+    });
+    
+
+    // Check if the user confirmed the update
+    if (formValues) {
+      try {
+        const updatedData = {
+          date: formValues.date,
+          expenseDetail: formValues.expenseDetail,
+          totalExpense: parseFloat(formValues.totalExpense) || 0 // Ensure it's a number
+        };
+
+        const result = await api.updateExpense(entry._id, updatedData); 
+        if(!result.error){
+          setIsUpdated(!isUpdated)
+          Swal.fire('Updated!', 'Your expense has been updated.', 'success');
+        }else{
+          Swal.fire('Error', 'There was an error updating the expense.', 'error');
+        }
+      } catch (error) {
+        Swal.fire('Error', 'There was an error updating the expense.', 'error');
+        console.error('Error updating expense:', error);
+      }
+    }
+  }
+};
+
+
+
   return (
     <div className="min-h-screen bg-[#23346c] p-4 lg:p-10 text-gray-100 relative">
       <main className="mt-8 p-2">
@@ -210,6 +329,7 @@ const Expense = () => {
                 <th className="pb-2">Date</th>
                 <th className="pb-2">Expense Detail</th>
                 <th className="pb-2">Total Expense</th>
+                <th className="pb-2">actions</th>
               </tr>
             </thead>
             <tbody>
@@ -237,6 +357,10 @@ const Expense = () => {
                         style: "currency",
                         currency: "INR",
                       }).format(entry.totalExpense)}
+                    </td>
+                    <td className="py-4 flex gap-3">
+                      <FaTrash onClick={()=> handleDelete(entry._id)} className="text-red-600 cursor-pointer" />
+                      <FaEdit onClick={()=> handleUpdate(entry)} className="text-blue-600 cursor-pointer"/>
                     </td>
                   </tr>
                 ))

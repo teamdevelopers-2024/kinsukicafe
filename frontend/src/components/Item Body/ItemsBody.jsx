@@ -4,9 +4,9 @@ import searchIcon from "../../assets/searchIcon.svg";
 // import addCustomerIcon from "../../assets/addCustomerIcon.svg";
 import SpinnerOnly from "../spinnerOnly/SpinnerOnly";
 import AddItem from "../Add items/AddItem";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import EditModal from "../editItem/EditItem";
-
+import Swal from "sweetalert2";
 const ItemsBody = () => {
   const [showAddItem, setShowAddItem] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -15,6 +15,7 @@ const ItemsBody = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [editModal , setEditModal ] = useState(false)
   const [editData , setEditData ] = useState({})
+  const [isUpdated, setIsUpdated ] = useState(false)
 
   const itemsPerPage = 10; // Number of items per page
 
@@ -32,7 +33,7 @@ const ItemsBody = () => {
       }
     };
     fetchItems();
-  }, [showAddItem , editModal]); // Dependencies
+  }, [showAddItem , editModal ,isUpdated]); // Dependencies
 
   const totalPages = Math.ceil(items.length / itemsPerPage);
 
@@ -47,15 +48,71 @@ const ItemsBody = () => {
   });
 
 
-  const handleEditClick = (data) => {
-      setEditModal(true)
-      setEditData(data)
+  const handleEditClick = async(data) => {
+    const { value: password } = await Swal.fire({
+      title: 'Confirm Updation',
+      input: 'password',
+      inputLabel: 'Please enter your password',
+      inputPlaceholder: 'Password',
+      showCancelButton: true,
+      confirmButtonText: 'Update',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+          if (!value) {
+              return 'You need to enter a password!';
+          }
+          if (value !== '1234') {
+              return 'Incorrect Password';
+          }
+      }
+  });
+  if(password == '1234'){
+    setEditModal(true)
+    setEditData(data)
+  }
   }
 
   const paginatedItems = filteredItems.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+
+  const handleDelete = async (entryId) => {
+    const { value: password } = await Swal.fire({
+        title: 'Confirm Deletion',
+        input: 'password',
+        inputLabel: 'Please enter your password',
+        inputPlaceholder: 'Password',
+        showCancelButton: true,
+        confirmButtonText: 'Delete',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to enter a password!';
+            }
+            if (value !== '1234') {
+                return 'Incorrect Password';
+            }
+        }
+    });
+
+    if (password === '1234') {
+        try {
+            // Send DELETE request with ID as a query parameter
+            const result = await api.deleteItem(entryId)
+            if(result.error){
+              Swal.fire('Error', 'There was an error deleting the itme.', 'error')
+            }else {
+              setIsUpdated(!isUpdated)
+              Swal.fire('Deleted!', 'Your itme has been deleted.', 'success')
+            }
+        } catch (error) {
+            console.error('Error deleting itme:', error);
+            Swal.fire('Error', 'There was an error deleting the itme.', 'error');
+        }
+    }
+};
 
   return (
     <>
@@ -110,7 +167,10 @@ const ItemsBody = () => {
                       <td className="px-4 py-2">{item.name}</td>
                       <td className="px-4 py-2">{item.category}</td>
                       <td className="px-4 py-2">{item.price}</td>
-                      <td className="px-4 py-2 text-blue-700 cursor-pointer" onClick={()=>handleEditClick(item)}><FaEdit/></td>
+                      <td className="px-4 py-2 flex gap-3" >
+                        <FaTrash onClick={()=> handleDelete(item._id)} className="text-red-600 cursor-pointer"/>
+                        <FaEdit onClick={()=>handleEditClick(item)} className="text-blue-700 cursor-pointer" />
+                        </td>
                     </tr>
                   ))
                 ) : (

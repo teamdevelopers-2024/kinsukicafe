@@ -6,6 +6,45 @@ import orderDb from "./model/OrderDb.js"
 
 
 
+
+async function login(req, res) {
+    try {
+      const ogUsername = process.env.ADMIN_USERNAME
+      const ogPassword = process.env.ADMIN_PASSWORD
+      const { username, password } = req.body
+  
+      if (!username) {
+        return res.status(400).json({
+          error: true,
+          message: "please enter username"
+        })
+      }
+      if (!password) {
+        return res.status(400).json({
+          error: true,
+          message: 'please enter password'
+        })
+      }
+      if (username == ogUsername && password == ogPassword) {
+        res.status(200).json({
+          error: false,
+          message: "admin authenticated successfully"
+        })
+      } else {
+        res.status(400).json({
+          error: true,
+          message: "invalid credantials"
+        })
+      }
+  
+    } catch (error) {
+      res.status(500).json({
+        error: true,
+        message: "internel server error"
+      })
+    }
+  }
+
 async function getCategory(req, res) {
     try {
         const data = await CategoryDb.find().sort({ _id: -1 })
@@ -335,7 +374,196 @@ async function updateItem(req, res) {
 
 
 
+// In your deleteExpense function
+async function deleteExpense(req, res) {
+    const { id } = req.query; // Extract the ID from query parameters
+
+    try {
+        // Validate the ID
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+
+        // Delete the expense
+        const deletedExpense = await ExpenseDb.findByIdAndDelete(id);
+
+        if (!deletedExpense) {
+            return res.status(404).json({ error: true, message: 'Expense not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Expense deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting expense:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+
+
+async function deleteOrder(req, res) {
+    const { id } = req.query; 
+
+    try {
+        // Validate the ID
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+
+        const deletedOrder = await orderDb.findByIdAndDelete(id);
+
+        if (!deletedOrder) {
+            return res.status(404).json({ error: true, message: 'Order not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Order deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting Order:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+async function deleteItem(req, res) {
+    const { id } = req.query; 
+    try {
+        // Validate the ID
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+
+        const deletedOrder = await itemDb.findByIdAndDelete(id);
+
+        if (!deletedOrder) {
+            return res.status(404).json({ error: true, message: 'Item not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Item deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting Item:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+
+
+
+async function updateExpense(req, res) {
+    try {
+        const { id, formdata } = req.body; // Ensure it's formData, not formdata
+        console.log('formData:', req.body);
+        
+        // Validate the ID and formData
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+        
+        // Update the expense in the database
+        const updatedExpense = await ExpenseDb.findByIdAndUpdate(
+            id,
+            { $set: formdata }, // Correctly set the formData
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedExpense) {
+            return res.status(404).json({ error: true, message: 'Expense not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Expense updated successfully',
+            data: updatedExpense
+        });
+    } catch (error) {
+        console.error('Error updating expense:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+
+
+
+
+async function updateCategory(req,res) {
+    try {
+        const { id, name } = req.body; // Ensure it's formData, not formdata\
+        
+        // Validate the ID and formData
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+        
+        // Update the expense in the database
+        const updatedCat = await CategoryDb.findByIdAndUpdate(
+            id,
+            { $set: name }, // Correctly set the formData
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedCat) {
+            return res.status(404).json({ error: true, message: 'Category not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Category updated successfully',
+            data: updatedCat
+        });
+    } catch (error) {
+        console.error('Error updating Category:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+
+
+
+async function deleteCategory(req, res) {
+    const { id } = req.query; 
+    try {
+        // Validate the ID
+        if (!id) {
+            return res.status(400).json({ error: true, message: 'Invalid ID' });
+        }
+
+        const deletedOrder = await CategoryDb.findByIdAndDelete(id);
+
+        if (!deletedOrder) {
+            return res.status(404).json({ error: true, message: 'Category not found' });
+        }
+
+        res.status(200).json({
+            error: false,
+            message: 'Category deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting Category:', error);
+        res.status(500).json({
+            error: true,
+            message: 'Internal server error'
+        });
+    }
+}
+
 export default {
+    login,
     getCategory,
     addCategory,
     addItem,
@@ -347,5 +575,11 @@ export default {
     getHomeData,
     getLatestIncome,
     updatePaymentMethod,
-    updateItem
+    updateItem,
+    deleteExpense,
+    updateExpense,
+    deleteOrder,
+    deleteItem,
+    updateCategory,
+    deleteCategory
 }

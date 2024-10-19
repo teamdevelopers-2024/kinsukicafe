@@ -1,21 +1,21 @@
 import axios from "axios";
 
 
-const api = axios.create({
-  baseURL: "https://kinsukicafe-api.vercel.app/api", 
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
-})
-
 // const api = axios.create({
-//   baseURL: "http://localhost:3001/api", 
+//   baseURL: "https://kinsukicafe-api.vercel.app/api", 
 //   headers: {
 //     "Content-Type": "application/json",
 //   },
 //   withCredentials: true,
 // })
+
+const api = axios.create({
+  baseURL: "http://localhost:3001/api", 
+  headers: {
+    "Content-Type": "application/json",
+  },
+  withCredentials: true,
+})
 
 
 
@@ -211,6 +211,72 @@ async function updateItem(body) {
   }
 }
 
+
+async function deleteExpense(id) {
+    try {
+      const response = await api.delete(`/deleteExpense?id=${id}`)
+      return response.data
+    } catch (error) {
+    console.log(error)
+    return error.response.data
+    }
+}
+
+async function updateExpense(id,formdata) {
+  try {
+    const response = await api.put(`/updateExpense`,{id,formdata})
+    return response.data
+  } catch (error) {
+  console.log(error)
+  return error.response.data
+  }
+}
+
+async function deleteOrder(id) {
+  try {
+    const response = await api.delete(`/deleteOrder?id=${id}`)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  return error.response.data
+  }
+}
+
+async function deleteItem(id) {
+  try {
+    const response = await api.delete(`/deleteItem?id=${id}`)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  return error.response.data
+  }
+}
+
+
+
+async function updateCategory(id , name) {
+  try {
+    const response = await api.put("/updateCategory",{
+      id,name
+    })
+    return response.data
+  } catch (error) {
+    console.log(error)
+    return error.response.data
+  }
+}
+
+async function deleteCategory(id) {
+  try {
+    const response = await api.delete(`/deleteCategory?id=${id}`)
+    return response.data
+  } catch (error) {
+    console.log(error)
+  return error.response.data
+  }
+}
+
+
 // Exporting functions
 export default {
   login,
@@ -228,5 +294,11 @@ export default {
   getHomeData,
   getLatestIncome,
   updatePaymentMethod,
-  updateItem
+  updateItem,
+  deleteExpense,
+  updateExpense,
+  deleteOrder,
+  deleteItem,
+  updateCategory,
+  deleteCategory
 };
