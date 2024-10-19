@@ -58,13 +58,13 @@ function CatogeryBody() {
             if (!value) {
                 return 'You need to enter a password!';
             }
-            if (value !== '1234') {
+            if (value !== '4321') {
                 return 'Incorrect Password';
             }
         }
     });
 
-    if (password === '1234') {
+    if (password === '4321') {
         try {
             // Send DELETE request with ID as a query parameter
             const result = await api.deleteCategory(entryId)
@@ -95,14 +95,14 @@ const handleUpdate = async (entry) => {
       if (!value) {
         return 'You need to enter a password!';
       }
-      if (value !== '1234') { // Replace with your actual password verification logic
+      if (value !== '4321') { // Replace with your actual password verification logic
         return 'Incorrect Password!';
       }
     }
   });
 
   // Only proceed if the password is correct
-  if (password === '1234') {
+  if (password === '4321') {
     // Show the update modal for further edits
     const { value: name } = await Swal.fire({
       title: 'Update Category',

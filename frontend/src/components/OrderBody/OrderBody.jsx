@@ -651,13 +651,13 @@ const OrderBody = () => {
             if (!value) {
                 return 'You need to enter a password!';
             }
-            if (value !== '1234') {
+            if (value !== '4321') {
                 return 'Incorrect Password';
             }
         }
     });
 
-    if (password === '1234') {
+    if (password === '4321') {
         try {
           setIsLoading(true)
             // Send DELETE request with ID as a query parameter
