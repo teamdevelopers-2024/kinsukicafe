@@ -34,7 +34,4 @@ router.delete("/deleteCategory",controller.deleteCategory)
 
 
 
-
-
-
 export default router

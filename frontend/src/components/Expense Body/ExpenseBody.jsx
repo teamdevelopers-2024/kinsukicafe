@@ -214,6 +214,7 @@ const Expense = () => {
     if (password === '1234') {
         try {
             // Send DELETE request with ID as a query parameter
+            setLoading(true)
             const result = await api.deleteExpense(entryId)
             if(result.error){
               Swal.fire('Error', 'There was an error deleting the expense.', 'error')
@@ -224,6 +225,8 @@ const Expense = () => {
         } catch (error) {
             console.error('Error deleting expense:', error);
             Swal.fire('Error', 'There was an error deleting the expense.', 'error');
+        } finally {
+          setLoading(false)
         }
     }
 };

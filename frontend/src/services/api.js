@@ -242,9 +242,9 @@ async function deleteOrder(id) {
   }
 }
 
-async function deleteItem(id) {
+async function deleteItem(id,cat) {
   try {
-    const response = await api.delete(`/deleteItem?id=${id}`)
+    const response = await api.delete(`/deleteItem?id=${id}&&cat=${cat}`)
     return response.data
   } catch (error) {
     console.log(error)

@@ -78,7 +78,7 @@ const ItemsBody = () => {
   );
 
 
-  const handleDelete = async (entryId) => {
+  const handleDelete = async (entryId ,cat) => {
     const { value: password } = await Swal.fire({
         title: 'Confirm Deletion',
         input: 'password',
@@ -99,8 +99,9 @@ const ItemsBody = () => {
 
     if (password === '1234') {
         try {
+          setIsLoading(true)
             // Send DELETE request with ID as a query parameter
-            const result = await api.deleteItem(entryId)
+            const result = await api.deleteItem(entryId,cat)
             if(result.error){
               Swal.fire('Error', 'There was an error deleting the itme.', 'error')
             }else {
@@ -110,6 +111,8 @@ const ItemsBody = () => {
         } catch (error) {
             console.error('Error deleting itme:', error);
             Swal.fire('Error', 'There was an error deleting the itme.', 'error');
+        }finally {
+          setIsLoading(false)
         }
     }
 };
@@ -168,7 +171,7 @@ const ItemsBody = () => {
                       <td className="px-4 py-2">{item.category}</td>
                       <td className="px-4 py-2">{item.price}</td>
                       <td className="px-4 py-2 flex gap-3" >
-                        <FaTrash onClick={()=> handleDelete(item._id)} className="text-red-600 cursor-pointer"/>
+                        <FaTrash onClick={()=> handleDelete(item._id ,item.category)} className="text-red-600 cursor-pointer"/>
                         <FaEdit onClick={()=>handleEditClick(item)} className="text-blue-700 cursor-pointer" />
                         </td>
                     </tr>

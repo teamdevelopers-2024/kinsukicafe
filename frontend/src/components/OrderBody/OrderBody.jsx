@@ -659,6 +659,7 @@ const OrderBody = () => {
 
     if (password === '1234') {
         try {
+          setIsLoading(true)
             // Send DELETE request with ID as a query parameter
             const result = await api.deleteOrder(entryId)
             if(result.error){
@@ -670,6 +671,8 @@ const OrderBody = () => {
         } catch (error) {
             console.error('Error deleting expense:', error);
             Swal.fire('Error', 'There was an error deleting the expense.', 'error');
+        } finally {
+          setIsLoading(false)
         }
     }
 };

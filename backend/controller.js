@@ -433,7 +433,7 @@ async function deleteOrder(req, res) {
     }
 }
 async function deleteItem(req, res) {
-    const { id } = req.query; 
+    const { id ,cat } = req.query; 
     try {
         // Validate the ID
         if (!id) {
@@ -441,6 +441,10 @@ async function deleteItem(req, res) {
         }
 
         const deletedOrder = await itemDb.findByIdAndDelete(id);
+        await CategoryDb.updateOne(
+            { name: cat }, 
+            { $inc: { totalItems: -1 } }
+        );
 
         if (!deletedOrder) {
             return res.status(404).json({ error: true, message: 'Item not found' });
@@ -536,7 +540,7 @@ async function updateCategory(req,res) {
 
 
 async function deleteCategory(req, res) {
-    const { id } = req.query; 
+    const { id  } = req.query; 
     try {
         // Validate the ID
         if (!id) {
