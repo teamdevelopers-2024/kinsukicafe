@@ -507,7 +507,7 @@ const OrderBody = () => {
     doc.setFontSize(12);
 
     // Adjust endDate to include the entire day
-    endDate.setHours(23, 59, 59, 999); // Set to the end of the day
+    endDate.setHours(23, 59, 59, 999);
 
     // Dynamic title based on selected options
     let title;
@@ -531,44 +531,58 @@ const OrderBody = () => {
       "UPI",
       "Cash",
     ];
-
     const filteredData = incomeHistoryData.filter((entry) => {
       const entryDate = new Date(entry.Date);
       return entryDate >= startDate && entryDate <= endDate;
     });
 
     // Set column widths
-    const columnWidths = [30, 50, 50, 30, 30]; // Adjust these widths as needed
+    const columnWidths = [30, 50, 50, 30, 30];
+    const rowHeight = 10; // Height of each row
+    const marginTop = 35; // Margin from top for the first row
+    const pageHeight = doc.internal.pageSize.height;
 
     // Add title
     if (typeof title === "string") {
       doc.text(title, 75, 10);
     }
 
+    // Add headers
     headers.forEach((header, index) => {
       const xPosition =
         10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
       if (typeof header === "string") {
-        doc.text(header, xPosition, 25);
+        doc.text(header, xPosition, marginTop);
       }
     });
 
     // Add a separator line
-    doc.line(10, 30, 200, 30);
+    doc.line(10, marginTop + 5, 200, marginTop + 5);
 
     let totalUPI = 0;
     let totalCash = 0;
+    let currentYPosition = marginTop + 10;
 
     filteredData.forEach((entry, index) => {
+      if (currentYPosition + rowHeight > pageHeight) {
+        doc.addPage(); // Start a new page if we exceed the height
+        currentYPosition = marginTop + 10; // Reset position
+        // Re-add headers on new page
+        headers.forEach((header, index) => {
+          const xPosition =
+            10 + columnWidths.slice(0, index).reduce((a, b) => a + b, 0);
+          doc.text(header, xPosition, currentYPosition);
+        });
+        // Add a separator line
+        doc.line(10, currentYPosition + 5, 200, currentYPosition + 5);
+        currentYPosition += 10; // Move down after headers
+      }
+
       const entryDate = new Date(entry.Date).toLocaleDateString("en-GB");
       const upiAmount =
-        entry.paymentMethod === "UPI"
-          ? entry.totalAmount.toFixed(2)
-          : "";
+        entry.paymentMethod === "UPI" ? entry.totalAmount.toFixed(2) : "";
       const cashAmount =
-        entry.paymentMethod === "Cash" 
-          ? entry.totalAmount.toFixed(2)
-          : "";
+        entry.paymentMethod === "Cash" ? entry.totalAmount.toFixed(2) : "";
 
       const row = [
         entryDate,
@@ -580,22 +594,24 @@ const OrderBody = () => {
 
       // Accumulate totals based on payment method
       if (entry.paymentMethod === "UPI") {
-        totalUPI += entry.totalAmount || 0; // Accumulate total UPI
+        totalUPI += entry.totalAmount || 0;
       } else if (entry.paymentMethod === "Cash") {
-        totalCash += entry.totalAmount || 0; // Accumulate total Cash
+        totalCash += entry.totalAmount || 0;
       }
 
       row.forEach((cell, cellIndex) => {
         const xPosition =
           10 + columnWidths.slice(0, cellIndex).reduce((a, b) => a + b, 0);
         if (typeof cell === "string") {
-          doc.text(cell, xPosition, 35 + index * 10);
+          doc.text(cell, xPosition, currentYPosition);
         }
       });
+
+      currentYPosition += rowHeight; // Move down for the next row
     });
 
     // Add total calculations at the end
-    const totalRowYPosition = 35 + filteredData.length * 10;
+    const totalRowYPosition = currentYPosition;
 
     // Add a separator line
     doc.line(10, totalRowYPosition, 200, totalRowYPosition);
@@ -636,7 +652,6 @@ const OrderBody = () => {
 
     doc.save(fileName);
   };
-
 
   const handleDelete = async (entryId) => {
     const { value: password } = await Swal.fire({
